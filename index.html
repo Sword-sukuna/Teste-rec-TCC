@@ -14,10 +14,18 @@ content="width=device-width, initial-scale=1.0"
 
 <link rel="stylesheet" href="style.css">
 
+
+<!-- 🧠 IA FACIAL -->
 <script defer
 src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js">
 </script>
 
+
+<!-- 💾 BANCO LOCAL -->
+<script defer src="db.js"></script>
+
+
+<!-- ⚡ SISTEMA -->
 <script defer src="script.js"></script>
 
 </head>
@@ -28,7 +36,11 @@ src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js">
 
 <h1>🎓 EduBlock Vision</h1>
 
+
+<!-- 👨‍🎓 CADASTRO -->
 <div class="cadastro">
+
+<h2>👨‍🎓 Cadastro facial</h2>
 
 <input
 type="text"
@@ -37,11 +49,15 @@ placeholder="Nome do aluno"
 >
 
 <button id="cadastrar">
+
 Cadastrar rosto
+
 </button>
 
 </div>
 
+
+<!-- 🔍 BUSCA -->
 <input
 type="text"
 id="buscar"
@@ -49,6 +65,20 @@ placeholder="🔍 Buscar aluno"
 class="buscar"
 >
 
+
+<!-- 🗑 FERRAMENTAS -->
+<div class="ferramentas">
+
+<button id="resetarBanco">
+
+🗑 Resetar banco de dados
+
+</button>
+
+</div>
+
+
+<!-- 🎥 CAMERA -->
 <div class="cameraBox">
 
 <video
@@ -62,12 +92,16 @@ playsinline
 
 </div>
 
+
+<!-- 📋 STATUS -->
 <div id="resultado">
 
-Carregando sistema...
+📦 Inicializando sistema...
 
 </div>
 
+
+<!-- 👨‍🎓 LISTA -->
 <h2>👨‍🎓 Alunos cadastrados</h2>
 
 <div id="lista"></div>
