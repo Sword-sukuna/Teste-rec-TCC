@@ -1,12 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-<title>Teste</title>
-</head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>EduBlock Mobile</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
 
-<h1>FUNCIONOU 🔥</h1>
+  <div class="container">
+
+    <h1>🎓 EduBlock Mobile</h1>
+
+    <form id="formAluno">
+
+      <input
+        type="text"
+        id="nome"
+        placeholder="Nome do aluno"
+        required
+      >
+
+      <input
+        type="password"
+        id="senha"
+        placeholder="Senha"
+        required
+      >
+
+      <input
+        type="file"
+        id="foto"
+        accept="image/*"
+        capture="environment"
+      >
+
+      <button type="submit">
+        Cadastrar aluno
+      </button>
+
+    </form>
+
+    <input
+      type="text"
+      id="buscar"
+      placeholder="Buscar aluno"
+      class="buscar"
+    >
+
+    <div id="lista"></div>
+
+  </div>
+
+  <script src="script.js"></script>
 
 </body>
 </html>
