@@ -1,362 +1,149 @@
-// 📡 conexão
+// 📡 WebRTC
 let peerConnection;
-
 let dataChannel;
 
 
-// 🔑 configuração
+// 🔑 config STUN
 const config = {
-
-  iceServers:[
-
+  iceServers: [
     {
-
-      urls:
-      "stun:stun.l.google.com:19302"
-
+      urls: "stun:stun.l.google.com:19302"
     }
-
   ]
-
 };
 
 
-// 🚀 criar conexão
-function criarConexao(){
+// 🚀 iniciar conexão
+function criarConexao() {
+  peerConnection = new RTCPeerConnection(config);
 
-  peerConnection =
-  new RTCPeerConnection(
-    config
-  );
-
-
-  peerConnection.ondatachannel =
-  event=>{
-
-    dataChannel =
-    event.channel;
-
+  peerConnection.ondatachannel = (event) => {
+    dataChannel = event.channel;
     configurarCanal();
-
   };
-
 }
 
 
-// ⚡ canal
-function configurarCanal(){
-
-  dataChannel.onopen =
-  ()=>{
-
-    adicionarLog(
-      "📡 Conectado"
-    );
-
+// ⚡ canal de dados
+function configurarCanal() {
+  dataChannel.onopen = () => {
+    adicionarLog("📡 Conectado com sucesso");
   };
 
+  dataChannel.onmessage = async (event) => {
+    const dados = JSON.parse(event.data);
 
-  dataChannel.onmessage =
-  async event=>{
+    if (dados.tipo === "novoAluno") {
+      await adicionarAlunoDB(dados.aluno);
 
-    const dados =
-    JSON.parse(
-      event.data
-    );
-
-
-    // 👨‍🎓 sincronizar aluno
-    if(
-      dados.tipo ===
-      "novoAluno"
-    ){
-
-      await adicionarAlunoDB(
-        dados.aluno
-      );
-
-
-      alunos =
-      await listarAlunosDB();
-
-
+      alunos = await listarAlunosDB();
       carregarMatcher();
-
       renderLista();
 
-
-      adicionarLog(
-
-        `👨‍🎓 ${dados.aluno.nome}
-        sincronizado`
-
-      );
-
+      adicionarLog(`👨‍🎓 ${dados.aluno.nome} sincronizado`);
     }
-
   };
-
 }
 
 
 // 📤 enviar aluno
-function enviarAluno(aluno){
-
-  if(
-
-    dataChannel &&
-
-    dataChannel.readyState ===
-    "open"
-
-  ){
-
+function enviarAluno(aluno) {
+  if (dataChannel && dataChannel.readyState === "open") {
     dataChannel.send(
-
       JSON.stringify({
-
-        tipo:"novoAluno",
-
+        tipo: "novoAluno",
         aluno
-
       })
-
     );
 
+    adicionarLog(`📤 Enviado: ${aluno.nome}`);
   }
-
 }
 
 
-// 📋 log
-function adicionarLog(texto){
+// 📋 logs
+function adicionarLog(texto) {
+  const logs = document.getElementById("logs");
 
-  const logs =
-  document.getElementById(
-    "logs"
-  );
-
-
-  const div =
-  document.createElement(
-    "div"
-  );
-
-  div.className =
-  "logItem";
-
-  div.innerText =
-  texto;
-
+  const div = document.createElement("div");
+  div.className = "logItem";
+  div.innerText = texto;
 
   logs.prepend(div);
-
 }
 
 
-// 🚀 iniciar
+// 🚀 iniciar RTC
 criarConexao();
 
 
-// 📱 gerar QR
-document
-.getElementById("criarOffer")
-.addEventListener(
-"click",
-async ()=>{
+// 📱 GERAR QR CODE (PC -> celular)
+document.getElementById("criarOffer").addEventListener("click", async () => {
 
-  dataChannel =
-  peerConnection
-  .createDataChannel(
-    "dados"
-  );
-
+  dataChannel = peerConnection.createDataChannel("dados");
   configurarCanal();
 
+  const offer = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offer);
 
-  const offer =
-
-  await peerConnection
-  .createOffer();
-
-
-  await peerConnection
-  .setLocalDescription(
-    offer
-  );
-
-
-  // ⏳ ICE
-  await new Promise(resolve=>{
-
-    if(
-
-      peerConnection
-      .iceGatheringState ===
-      "complete"
-
-    ){
-
+  // ⏳ espera ICE
+  await new Promise((resolve) => {
+    if (peerConnection.iceGatheringState === "complete") {
       resolve();
-
-    }
-
-    else{
-
-      peerConnection
-      .addEventListener(
-
-        "icegatheringstatechange",
-
-        ()=>{
-
-          if(
-
-            peerConnection
-            .iceGatheringState ===
-            "complete"
-
-          ){
-
-            resolve();
-
-          }
-
+    } else {
+      peerConnection.addEventListener("icegatheringstatechange", () => {
+        if (peerConnection.iceGatheringState === "complete") {
+          resolve();
         }
-
-      );
-
+      });
     }
-
   });
 
 
-  const offerCompleta =
+  const offerFinal = JSON.stringify(peerConnection.localDescription);
 
-  JSON.stringify(
+  // 🔥 URL CORRIGIDA (SEM 404)
+  const baseUrl = window.location.href.split("?")[0];
 
-    peerConnection
-    .localDescription
-
-  );
+  const link = `${baseUrl}?offer=${encodeURIComponent(offerFinal)}`;
 
 
-  const link =
+  // 📱 gerar QR
+  const qrDiv = document.getElementById("qrcode");
+  qrDiv.innerHTML = "";
 
-  `${location.origin}
-  ${location.pathname}
-  ?offer=${
-    encodeURIComponent(
-      offerCompleta
-    )
-  }`;
-
-
-  document
-  .getElementById("qrcode")
-  .innerHTML = "";
-
-
-  QRCode.toCanvas(
-
-    link,
-
-    {
-
-      width:300
-
-    },
-
-    (erro,canvas)=>{
-
-      if(erro){
-
-        console.error(
-          erro
-        );
-
-        return;
-
-      }
-
-
-      document
-      .getElementById("qrcode")
-      .appendChild(
-        canvas
-      );
-
+  QRCode.toCanvas(link, { width: 300 }, (err, canvas) => {
+    if (err) {
+      console.error(err);
+      return;
     }
 
-  );
+    qrDiv.appendChild(canvas);
+  });
 
 });
 
 
-// 📱 celular recebendo
-window.addEventListener(
-"load",
-async ()=>{
+// 📱 CELULAR abre e responde automaticamente
+window.addEventListener("load", async () => {
 
-  const params =
-  new URLSearchParams(
-    location.search
-  );
+  const params = new URLSearchParams(location.search);
+  const offerTexto = params.get("offer");
 
+  if (!offerTexto) return;
 
-  const offerTexto =
-  params.get("offer");
+  try {
+    const offer = JSON.parse(decodeURIComponent(offerTexto));
 
+    await peerConnection.setRemoteDescription(offer);
 
-  if(!offerTexto){
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
 
-    return;
+    adicionarLog("📱 Conectado ao PC via QR");
 
-  }
-
-
-  try{
-
-    const offer =
-    JSON.parse(
-
-      decodeURIComponent(
-        offerTexto
-      )
-
-    );
-
-
-    await peerConnection
-    .setRemoteDescription(
-      offer
-    );
-
-
-    const answer =
-
-    await peerConnection
-    .createAnswer();
-
-
-    await peerConnection
-    .setLocalDescription(
-      answer
-    );
-
-
-    adicionarLog(
-      "📱 Dispositivo conectado"
-    );
-
-  }
-
-  catch(erro){
-
-    console.error(
-      erro
-    );
-
+  } catch (err) {
+    console.error(err);
   }
 
 });
