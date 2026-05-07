@@ -1,64 +1,97 @@
-let alunos = [];
+const video =
+document.getElementById("video");
 
-try {
+const canvas =
+document.getElementById("canvas");
 
-  alunos =
-    JSON.parse(localStorage.getItem("alunos"))
-    || [];
-
-} catch {
-
-  alunos = [];
-
-}
-
-const form =
-document.getElementById("formAluno");
+const resultado =
+document.getElementById("resultado");
 
 const lista =
 document.getElementById("lista");
 
-const buscar =
-document.getElementById("buscar");
+let alunos =
+JSON.parse(
+localStorage.getItem("alunos")
+) || [];
 
-form.addEventListener(
-"submit",
-async (e)=>{
+let faceMatcher;
 
-  e.preventDefault();
+
+// 🚀 INICIAR
+async function iniciar(){
+
+  // 📦 carregar modelos
+  await faceapi.nets.tinyFaceDetector.loadFromUri("./models");
+
+  await faceapi.nets.faceLandmark68Net.loadFromUri("./models");
+
+  await faceapi.nets.faceRecognitionNet.loadFromUri("./models");
+
+
+  // 🎥 abrir webcam (DroidCam)
+  const stream =
+  await navigator.mediaDevices.getUserMedia({
+
+    video:true
+
+  });
+
+  video.srcObject = stream;
+
+  // 👨‍🎓 carregar alunos
+  carregarMatcher();
+
+}
+
+iniciar();
+
+
+// 👨‍🎓 CADASTRAR ROSTO
+document
+.getElementById("cadastrar")
+.addEventListener(
+"click",
+async ()=>{
 
   const nome =
   document.getElementById("nome").value;
 
-  const senha =
-  document.getElementById("senha").value;
+  if(!nome){
 
-  const fotoInput =
-  document.getElementById("foto");
+    alert("Digite o nome");
 
-  let foto = "";
+    return;
 
-  if(fotoInput.files[0]){
+  }
 
-    foto =
-    await converterBase64(
-      fotoInput.files[0]
+  const deteccao =
+  await faceapi
+  .detectSingleFace(
+    video,
+    new faceapi.TinyFaceDetectorOptions()
+  )
+  .withFaceLandmarks()
+  .withFaceDescriptor();
+
+  if(!deteccao){
+
+    alert(
+      "Nenhum rosto detectado"
     );
+
+    return;
 
   }
 
   alunos.push({
 
-    id:Date.now(),
-
     nome,
 
-    senha,
-
-    foto,
-
-    horaCadastro:
-    new Date().toLocaleString()
+    descriptor:
+    Array.from(
+      deteccao.descriptor
+    )
 
   });
 
@@ -67,59 +100,58 @@ async (e)=>{
     JSON.stringify(alunos)
   );
 
-  form.reset();
+  carregarMatcher();
 
-  renderizar();
+  renderLista();
 
-  alert("Aluno cadastrado!");
+  alert("Rosto cadastrado!");
 
 });
 
-buscar.addEventListener(
-"input",
-renderizar
-);
 
-function renderizar(){
+// 🧠 CARREGAR MATCHER
+function carregarMatcher(){
 
-  const termo =
-  buscar.value.toLowerCase();
+  const labeledDescriptors =
+  alunos.map(aluno=>{
 
-  const filtrados =
-  alunos.filter(a=>
+    return new faceapi
+    .LabeledFaceDescriptors(
 
-    a.nome
-    .toLowerCase()
-    .includes(termo)
+      aluno.nome,
 
+      [
+
+        new Float32Array(
+          aluno.descriptor
+        )
+
+      ]
+
+    );
+
+  });
+
+  faceMatcher =
+  new faceapi.FaceMatcher(
+    labeledDescriptors,
+    0.6
   );
 
+  renderLista();
+
+}
+
+
+// 📋 LISTA
+function renderLista(){
+
   lista.innerHTML =
-  filtrados.map(aluno=>`
+  alunos.map(a=>`
 
-    <div class="card">
+    <div class="aluno">
 
-      ${
-        aluno.foto
-        ? `<img src="${aluno.foto}">`
-        : ""
-      }
-
-      <div class="info">
-
-        <h3>
-          ${aluno.nome}
-        </h3>
-
-        <p class="senha">
-          🔒 ${aluno.senha}
-        </p>
-
-        <p>
-          🕒 ${aluno.horaCadastro}
-        </p>
-
-      </div>
+      👨‍🎓 ${a.nome}
 
     </div>
 
@@ -127,25 +159,80 @@ function renderizar(){
 
 }
 
-function converterBase64(file){
 
-  return new Promise(
-    (resolve,reject)=>{
+// 🔍 RECONHECIMENTO
+video.addEventListener(
+"play",
+()=>{
 
-      const reader =
-      new FileReader();
+  const displaySize = {
 
-      reader.readAsDataURL(file);
+    width:video.width,
+    height:video.height
 
-      reader.onload=
-      ()=>resolve(reader.result);
+  };
 
-      reader.onerror=
-      error=>reject(error);
-
-    }
+  faceapi.matchDimensions(
+    canvas,
+    displaySize
   );
 
-}
+  setInterval(
+  async ()=>{
 
-renderizar();
+    const deteccoes =
+    await faceapi
+    .detectAllFaces(
+      video,
+      new faceapi
+      .TinyFaceDetectorOptions()
+    )
+    .withFaceLandmarks()
+    .withFaceDescriptors();
+
+    const resized =
+    faceapi.resizeResults(
+      deteccoes,
+      displaySize
+    );
+
+    canvas
+    .getContext("2d")
+    .clearRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    resized.forEach(d=>{
+
+      const resultadoFace =
+      faceMatcher.findBestMatch(
+        d.descriptor
+      );
+
+      const box =
+      d.detection.box;
+
+      const drawBox =
+      new faceapi.draw.DrawBox(
+        box,
+        {
+
+          label:
+          resultadoFace.toString()
+
+        }
+      );
+
+      drawBox.draw(canvas);
+
+      resultado.innerHTML =
+      `✅ ${resultadoFace.toString()}`;
+
+    });
+
+  },500);
+
+});

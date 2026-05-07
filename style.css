@@ -3,89 +3,104 @@
 }
 
 body{
+
   margin:0;
-  font-family:Arial,sans-serif;
   background:#eef2f7;
+  font-family:Arial;
+
 }
 
 .container{
-  max-width:900px;
-  margin:20px auto;
-  background:white;
+
+  max-width:1000px;
+  margin:auto;
   padding:20px;
-  border-radius:16px;
+
 }
 
 h1{
+
   text-align:center;
   color:#0d6efd;
+
 }
 
-form{
-  display:grid;
-  gap:12px;
+.cadastro{
+
+  background:white;
+  padding:20px;
+  border-radius:16px;
   margin-bottom:20px;
+
 }
 
 input,
 button{
-  padding:12px;
+
+  width:100%;
+  padding:14px;
+  margin-top:10px;
   border-radius:10px;
   border:1px solid #ccc;
-  font-size:16px;
+
 }
 
 button{
+
   background:#0d6efd;
   color:white;
   border:none;
   cursor:pointer;
+
 }
 
-button:hover{
-  opacity:0.9;
+.cameraBox{
+
+  position:relative;
+  background:black;
+  border-radius:20px;
+  overflow:hidden;
+
 }
 
-.buscar{
-  margin-bottom:16px;
+video{
+
+  width:100%;
+  border-radius:20px;
+
+}
+
+canvas{
+
+  position:absolute;
+  top:0;
+  left:0;
+
+}
+
+#resultado{
+
+  margin-top:20px;
+  padding:20px;
+  background:white;
+  border-radius:16px;
+  font-size:22px;
+  text-align:center;
+
 }
 
 #lista{
+
+  margin-top:20px;
   display:grid;
-  gap:14px;
+  gap:10px;
+
 }
 
-.card{
-  background:#f8f9fa;
-  border-radius:14px;
-  padding:14px;
-  display:flex;
-  gap:14px;
-  align-items:center;
-}
+.aluno{
 
-.card img{
-  width:90px;
-  height:90px;
-  border-radius:50%;
-  object-fit:cover;
-  border:3px solid #0d6efd;
-}
-
-.info{
-  flex:1;
-}
-
-.senha{
-  color:#666;
-  font-size:14px;
-}
-
-@media(max-width:700px){
-
-  .card{
-    flex-direction:column;
-    text-align:center;
-  }
+  background:white;
+  padding:12px;
+  border-radius:12px;
 
 }
