@@ -14,6 +14,8 @@ let alunos = [];
 
 let faceMatcher;
 
+let processandoReconhecimento = false;
+
 
 // 🚀 INICIAR
 async function iniciar(){
@@ -35,7 +37,7 @@ async function iniciar(){
     "📦 Carregando IA...";
 
 
-    // 🧠 carregar modelos
+    // 🧠 modelos
     await faceapi
     .nets
     .tinyFaceDetector
@@ -56,21 +58,17 @@ async function iniciar(){
     "🎥 Abrindo câmera...";
 
 
-    // 📱 detectar celular
-    const mobile =
-    /Android|iPhone|iPad|iPod/i
-    .test(navigator.userAgent);
+    // 🎥 câmera inteligente
+    let stream;
 
+    try{
 
-    // 🎥 abrir câmera
-    const stream =
-    await navigator
-    .mediaDevices
-    .getUserMedia({
+      stream =
+      await navigator
+      .mediaDevices
+      .getUserMedia({
 
-      video: mobile
-
-      ? {
+        video:{
 
           facingMode:"user",
 
@@ -84,19 +82,43 @@ async function iniciar(){
 
         }
 
-      : {
+      });
 
-          width:{
-            ideal:1280
-          },
+    }
 
-          height:{
-            ideal:720
+    catch{
+
+      try{
+
+        stream =
+        await navigator
+        .mediaDevices
+        .getUserMedia({
+
+          video:{
+
+            facingMode:"environment"
+
           }
 
-        }
+        });
 
-    });
+      }
+
+      catch{
+
+        stream =
+        await navigator
+        .mediaDevices
+        .getUserMedia({
+
+          video:true
+
+        });
+
+      }
+
+    }
 
 
     video.srcObject = stream;
@@ -137,7 +159,8 @@ async ()=>{
   const nome =
   document
   .getElementById("nome")
-  .value;
+  .value
+  .trim();
 
   if(!nome){
 
@@ -182,7 +205,7 @@ async ()=>{
   }
 
 
-  // 📸 FOTO
+  // 📸 foto
   const captura =
   document.createElement(
     "canvas"
@@ -242,6 +265,10 @@ async ()=>{
   resultado.innerHTML =
   `✅ ${nome} cadastrado`;
 
+  document
+  .getElementById("nome")
+  .value = "";
+
 });
 
 
@@ -284,7 +311,7 @@ function carregarMatcher(){
 
     labeledDescriptors,
 
-    0.6
+    0.55
 
   );
 
@@ -329,6 +356,17 @@ function renderLista(){
           🕒 Registros:
           ${a.registros.length}
         </p>
+
+        <small>
+
+          ${
+            a.registros
+            .slice(-5)
+            .map(r=>r.horario)
+            .join(" | ")
+          }
+
+        </small>
 
       </div>
 
@@ -384,7 +422,7 @@ async function excluirAluno(id){
 }
 
 
-// 🗑 RESETAR BANCO
+// 🗑 RESETAR
 document
 .getElementById("resetarBanco")
 .addEventListener(
@@ -447,151 +485,223 @@ video.addEventListener(
 
   async ()=>{
 
-    if(!faceMatcher){
+    if(
+      !faceMatcher ||
+      processandoReconhecimento
+    ){
 
       return;
 
     }
 
 
-    const deteccoes =
-
-    await faceapi
-
-    .detectAllFaces(
-
-      video,
-
-      new faceapi
-      .TinyFaceDetectorOptions()
-
-    )
-
-    .withFaceLandmarks()
-
-    .withFaceDescriptors();
+    processandoReconhecimento =
+    true;
 
 
-    const resized =
+    try{
 
-    faceapi.resizeResults(
+      const deteccoes =
 
-      deteccoes,
+      await faceapi
 
-      displaySize
+      .detectAllFaces(
 
-    );
+        video,
 
+        new faceapi
+        .TinyFaceDetectorOptions()
 
-    canvas.width =
-    video.videoWidth;
+      )
 
-    canvas.height =
-    video.videoHeight;
+      .withFaceLandmarks()
 
-
-    const ctx =
-    canvas.getContext("2d");
+      .withFaceDescriptors();
 
 
-    ctx.clearRect(
+      const resized =
 
-      0,
-      0,
-      canvas.width,
-      canvas.height
+      faceapi.resizeResults(
 
-    );
+        deteccoes,
 
-
-    resized.forEach(async d=>{
-
-
-      const resultadoFace =
-
-      faceMatcher
-      .findBestMatch(
-
-        d.descriptor
+        displaySize
 
       );
 
 
-      const box =
-      d.detection.box;
+      canvas.width =
+      video.videoWidth;
+
+      canvas.height =
+      video.videoHeight;
 
 
-      const drawBox =
+      const ctx =
+      canvas.getContext("2d");
 
-      new faceapi
-      .draw
-      .DrawBox(
 
-        box,
+      ctx.clearRect(
 
-        {
+        0,
+        0,
+        canvas.width,
+        canvas.height
 
-          label:
-          resultadoFace.toString()
+      );
+
+
+      for(const d of resized){
+
+
+        const resultadoFace =
+
+        faceMatcher
+        .findBestMatch(
+
+          d.descriptor
+
+        );
+
+
+        const box =
+        d.detection.box;
+
+
+        const drawBox =
+
+        new faceapi
+        .draw
+        .DrawBox(
+
+          box,
+
+          {
+
+            label:
+            resultadoFace.toString()
+
+          }
+
+        );
+
+
+        drawBox.draw(canvas);
+
+
+        const nomeDetectado =
+        resultadoFace.label;
+
+
+        if(
+          nomeDetectado === "unknown"
+        ){
+
+          continue;
 
         }
 
-      );
+
+        resultado.innerHTML =
+
+        `✅ ${nomeDetectado}`;
 
 
-      drawBox.draw(canvas);
+        const aluno =
+        alunos.find(a=>
+
+          a.nome === nomeDetectado
+
+        );
 
 
-      const nomeDetectado =
-      resultadoFace.label;
+        if(aluno){
+
+          // 🕒 horário atual
+          const agoraData =
+          new Date();
+
+          const agora =
+          agoraData.getTime();
 
 
-      resultado.innerHTML =
-
-      `✅ ${nomeDetectado}`;
-
-
-      const aluno =
-      alunos.find(a=>
-
-        a.nome === nomeDetectado
-
-      );
+          // ⏳ cooldown 5 min
+          const cooldown =
+          5 * 60 * 1000;
 
 
-      if(aluno){
+          const ultimoRegistro =
 
-        const agora =
-        new Date()
-        .toLocaleTimeString();
-
-
-        const ultimo =
-        aluno.registros[
-          aluno.registros.length -1
-        ];
+          aluno.registros[
+            aluno.registros.length -1
+          ];
 
 
-        if(ultimo !== agora){
+          // 🚫 evitar spam
+          if(
 
-          aluno.registros.push(
-            agora
-          );
+            !ultimoRegistro ||
+
+            agora -
+            ultimoRegistro.timestamp
+
+            >
+
+            cooldown
+
+          ){
+
+            aluno.registros.push({
+
+              horario:
+
+              agoraData
+              .toLocaleTimeString(),
+
+              timestamp:agora
+
+            });
 
 
-          await atualizarAlunoDB(
-            aluno
-          );
+            await atualizarAlunoDB(
+              aluno
+            );
+
+
+            resultado.innerHTML =
+
+            `✅ Presença registrada:
+            ${aluno.nome}`;
+
+
+            alunos =
+            await listarAlunosDB();
+
+            renderLista();
+
+          }
 
         }
 
       }
 
-    });
+    }
+
+    catch(erro){
+
+      console.error(
+        erro
+      );
+
+    }
+
+
+    processandoReconhecimento =
+    false;
 
   },
 
-  1000
+  1500
 
   );
 
