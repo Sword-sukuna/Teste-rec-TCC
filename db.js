@@ -69,7 +69,7 @@ function iniciarDB(){
 }
 
 
-// ➕ adicionar aluno
+// ➕ adicionar
 function adicionarAlunoDB(aluno){
 
   return new Promise((resolve)=>{
@@ -95,7 +95,7 @@ function adicionarAlunoDB(aluno){
 }
 
 
-// 📋 listar alunos
+// 📋 listar
 function listarAlunosDB(){
 
   return new Promise((resolve)=>{
@@ -129,7 +129,7 @@ function listarAlunosDB(){
 }
 
 
-// ❌ excluir aluno
+// ❌ excluir
 function excluirAlunoDB(id){
 
   return new Promise((resolve)=>{
@@ -155,7 +155,7 @@ function excluirAlunoDB(id){
 }
 
 
-// ✏ atualizar aluno
+// ✏ atualizar
 function atualizarAlunoDB(aluno){
 
   return new Promise((resolve)=>{

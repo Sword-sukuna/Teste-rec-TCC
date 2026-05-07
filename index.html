@@ -15,17 +15,21 @@ content="width=device-width, initial-scale=1.0"
 <link rel="stylesheet" href="style.css">
 
 
-<!-- 🧠 IA FACIAL -->
+<!-- 🧠 IA -->
 <script defer
 src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js">
 </script>
 
 
-<!-- 💾 BANCO LOCAL -->
+<!-- 💾 Banco -->
 <script defer src="db.js"></script>
 
 
-<!-- ⚡ SISTEMA -->
+<!-- 📡 RTC -->
+<script defer src="rtc.js"></script>
+
+
+<!-- ⚡ Sistema -->
 <script defer src="script.js"></script>
 
 </head>
@@ -35,6 +39,36 @@ src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js">
 <div class="container">
 
 <h1>🎓 EduBlock Vision</h1>
+
+
+<!-- 📡 WEBRTC -->
+<div class="rtcBox">
+
+<h2>📡 Conexão entre dispositivos</h2>
+
+<textarea
+id="offer"
+placeholder="Cole OFFER"
+></textarea>
+
+<button id="criarOffer">
+
+Criar conexão
+
+</button>
+
+<button id="criarAnswer">
+
+Responder conexão
+
+</button>
+
+<textarea
+id="answer"
+placeholder="Cole ANSWER"
+></textarea>
+
+</div>
 
 
 <!-- 👨‍🎓 CADASTRO -->
@@ -66,12 +100,12 @@ class="buscar"
 >
 
 
-<!-- 🗑 FERRAMENTAS -->
+<!-- 🗑 RESET -->
 <div class="ferramentas">
 
 <button id="resetarBanco">
 
-🗑 Resetar banco de dados
+🗑 Resetar banco
 
 </button>
 
@@ -96,7 +130,7 @@ playsinline
 <!-- 📋 STATUS -->
 <div id="resultado">
 
-📦 Inicializando sistema...
+📦 Inicializando...
 
 </div>
 
@@ -105,6 +139,12 @@ playsinline
 <h2>👨‍🎓 Alunos cadastrados</h2>
 
 <div id="lista"></div>
+
+
+<!-- 📋 LOGS -->
+<h2>📋 Eventos</h2>
+
+<div id="logs"></div>
 
 </div>
 

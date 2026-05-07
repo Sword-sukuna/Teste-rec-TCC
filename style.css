@@ -25,7 +25,10 @@ h1{
 
 }
 
-.cadastro{
+.cadastro,
+.rtcBox,
+#resultado,
+#logs{
 
   background:white;
   padding:20px;
@@ -35,7 +38,8 @@ h1{
 }
 
 input,
-button{
+button,
+textarea{
 
   width:100%;
   padding:14px;
@@ -56,12 +60,6 @@ button{
 }
 
 .buscar{
-
-  margin-bottom:20px;
-
-}
-
-.ferramentas{
 
   margin-bottom:20px;
 
@@ -94,17 +92,6 @@ canvas{
   position:absolute;
   top:0;
   left:0;
-
-}
-
-#resultado{
-
-  margin-top:20px;
-  padding:20px;
-  background:white;
-  border-radius:16px;
-  font-size:22px;
-  text-align:center;
 
 }
 
@@ -148,5 +135,20 @@ canvas{
 .info{
 
   flex:1;
+
+}
+
+#logs{
+
+  display:grid;
+  gap:10px;
+
+}
+
+.logItem{
+
+  background:#eef2f7;
+  padding:10px;
+  border-radius:10px;
 
 }
