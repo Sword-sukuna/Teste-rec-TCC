@@ -11,17 +11,17 @@ const lista =
 document.getElementById("lista");
 
 
-// 👨‍🎓 carregar alunos
+// 👨‍🎓 banco local
 let alunos = [];
 
-try {
+try{
 
   alunos =
   JSON.parse(
     localStorage.getItem("alunos")
   ) || [];
 
-} catch {
+}catch{
 
   alunos = [];
 
@@ -31,14 +31,14 @@ try {
 let faceMatcher;
 
 
-// 🚀 INICIAR SISTEMA
+// 🚀 INICIAR
 async function iniciar(){
 
   resultado.innerHTML =
   "📦 Carregando IA...";
 
 
-  // 📦 carregar modelos
+  // 📦 modelos
   await faceapi
   .nets
   .tinyFaceDetector
@@ -73,7 +73,6 @@ async function iniciar(){
 
     video: mobile
 
-    // 📱 celular
     ? {
 
         facingMode:"user",
@@ -88,7 +87,6 @@ async function iniciar(){
 
       }
 
-    // 💻 PC
     : {
 
         width:{
@@ -107,8 +105,9 @@ async function iniciar(){
   video.srcObject = stream;
 
 
-  // 👨‍🎓 carregar rostos
   carregarMatcher();
+
+  renderLista();
 
   resultado.innerHTML =
   "✅ Sistema iniciado";
@@ -118,7 +117,7 @@ async function iniciar(){
 iniciar();
 
 
-// 👨‍🎓 CADASTRAR ROSTO
+// 👨‍🎓 CADASTRO
 document
 .getElementById("cadastrar")
 .addEventListener(
@@ -147,6 +146,7 @@ async ()=>{
 
   const deteccao =
   await faceapi
+
   .detectSingleFace(
 
     video,
@@ -155,7 +155,9 @@ async ()=>{
     .TinyFaceDetectorOptions()
 
   )
+
   .withFaceLandmarks()
+
   .withFaceDescriptor();
 
 
@@ -170,14 +172,49 @@ async ()=>{
   }
 
 
+  // 📸 capturar foto
+  const captura =
+  document.createElement(
+    "canvas"
+  );
+
+  captura.width =
+  video.videoWidth;
+
+  captura.height =
+  video.videoHeight;
+
+  const ctx =
+  captura.getContext("2d");
+
+  ctx.drawImage(
+
+    video,
+
+    0,
+
+    0
+
+  );
+
+  const foto =
+  captura.toDataURL(
+    "image/png"
+  );
+
+
   alunos.push({
 
     nome,
 
+    foto,
+
     descriptor:
     Array.from(
       deteccao.descriptor
-    )
+    ),
+
+    registros:[]
 
   });
 
@@ -200,13 +237,13 @@ async ()=>{
   `✅ ${nome} cadastrado`;
 
   alert(
-    "Rosto cadastrado!"
+    "Aluno cadastrado!"
   );
 
 });
 
 
-// 🧠 CARREGAR MATCHER
+// 🧠 MATCHER
 function carregarMatcher(){
 
   if(alunos.length === 0){
@@ -217,6 +254,7 @@ function carregarMatcher(){
 
 
   const labeledDescriptors =
+
   alunos.map(aluno=>{
 
     return new faceapi
@@ -238,8 +276,7 @@ function carregarMatcher(){
 
 
   faceMatcher =
-  new faceapi
-  .FaceMatcher(
+  new faceapi.FaceMatcher(
 
     labeledDescriptors,
 
@@ -247,22 +284,66 @@ function carregarMatcher(){
 
   );
 
-
-  renderLista();
-
 }
 
 
-// 📋 LISTA DE ALUNOS
+// 📋 RENDER LISTA
 function renderLista(){
+
+  const busca =
+  document
+  .getElementById("buscar")
+  .value
+  .toLowerCase();
+
+
+  const filtrados =
+  alunos.filter(aluno=>
+
+    aluno.nome
+    .toLowerCase()
+    .includes(busca)
+
+  );
+
 
   lista.innerHTML =
 
-  alunos.map(a=>`
+  filtrados.map((a,index)=>`
 
     <div class="aluno">
 
-      👨‍🎓 ${a.nome}
+      <img src="${a.foto}">
+
+      <div class="info">
+
+        <h3>
+          👨‍🎓 ${a.nome}
+        </h3>
+
+        <p>
+          🕒 Registros:
+          ${a.registros.length}
+        </p>
+
+        <small>
+
+          ${
+            a.registros
+            .slice(-5)
+            .join(" | ")
+          }
+
+        </small>
+
+      </div>
+
+      <button
+      onclick="excluirAluno(${index})">
+
+        Excluir
+
+      </button>
 
     </div>
 
@@ -271,11 +352,52 @@ function renderLista(){
 }
 
 
-// 🔍 RECONHECIMENTO FACIAL
+// 🔍 BUSCAR
+document
+.getElementById("buscar")
+.addEventListener(
+"input",
+renderLista
+);
+
+
+// ❌ EXCLUIR
+function excluirAluno(index){
+
+  const confirmar =
+  confirm(
+    "Excluir aluno?"
+  );
+
+  if(!confirmar){
+
+    return;
+
+  }
+
+
+  alunos.splice(index,1);
+
+
+  localStorage.setItem(
+
+    "alunos",
+
+    JSON.stringify(alunos)
+
+  );
+
+
+  carregarMatcher();
+
+  renderLista();
+
+}
+
+
+// 🔍 RECONHECIMENTO
 video.addEventListener(
-
 "play",
-
 ()=>{
 
   const displaySize = {
@@ -398,15 +520,65 @@ video.addEventListener(
       drawBox.draw(canvas);
 
 
+      const nomeDetectado =
+      resultadoFace.label;
+
+
       resultado.innerHTML =
 
-      `✅ ${resultadoFace.toString()}`;
+      `✅ ${nomeDetectado}`;
+
+
+      // 👨‍🎓 procurar aluno
+      const aluno =
+      alunos.find(a=>
+
+        a.nome === nomeDetectado
+
+      );
+
+
+      if(aluno){
+
+        const agora =
+        new Date()
+        .toLocaleTimeString();
+
+
+        const ultimo =
+        aluno.registros[
+          aluno.registros.length -1
+        ];
+
+
+        // evitar spam
+        if(ultimo !== agora){
+
+          aluno.registros.push(
+            agora
+          );
+
+
+          localStorage.setItem(
+
+            "alunos",
+
+            JSON.stringify(alunos)
+
+          );
+
+
+          renderLista();
+
+        }
+
+      }
 
     });
 
   },
 
-  500
+  1000
 
   );
 

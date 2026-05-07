@@ -12,7 +12,7 @@ body{
 
 .container{
 
-  max-width:1000px;
+  max-width:1100px;
   margin:auto;
   padding:20px;
 
@@ -51,6 +51,12 @@ button{
   color:white;
   border:none;
   cursor:pointer;
+
+}
+
+.buscar{
+
+  margin-bottom:20px;
 
 }
 
@@ -93,14 +99,41 @@ canvas{
 
   margin-top:20px;
   display:grid;
-  gap:10px;
+  gap:12px;
 
 }
 
 .aluno{
 
   background:white;
-  padding:12px;
-  border-radius:12px;
+  border-radius:14px;
+  padding:14px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+
+}
+
+.aluno img{
+
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  object-fit:cover;
+
+}
+
+.aluno button{
+
+  background:#dc3545;
+  width:auto;
+
+}
+
+.info{
+
+  flex:1;
 
 }
