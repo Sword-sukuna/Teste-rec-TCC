@@ -20,7 +20,6 @@ function iniciarDB(){
       event.target.result;
 
 
-      // 👨‍🎓 tabela alunos
       if(
         !db.objectStoreNames
         .contains("alunos")
@@ -71,7 +70,7 @@ function iniciarDB(){
 
 
 // ➕ adicionar aluno
-function adicionarAluno(aluno){
+function adicionarAlunoDB(aluno){
 
   return new Promise((resolve)=>{
 
@@ -97,7 +96,7 @@ function adicionarAluno(aluno){
 
 
 // 📋 listar alunos
-function listarAlunos(){
+function listarAlunosDB(){
 
   return new Promise((resolve)=>{
 
@@ -147,6 +146,32 @@ function excluirAlunoDB(id){
     );
 
     store.delete(id);
+
+    tx.oncomplete =
+    ()=>resolve();
+
+  });
+
+}
+
+
+// ✏ atualizar aluno
+function atualizarAlunoDB(aluno){
+
+  return new Promise((resolve)=>{
+
+    const tx =
+    db.transaction(
+      "alunos",
+      "readwrite"
+    );
+
+    const store =
+    tx.objectStore(
+      "alunos"
+    );
+
+    store.put(aluno);
 
     tx.oncomplete =
     ()=>resolve();

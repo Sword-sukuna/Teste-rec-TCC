@@ -10,23 +10,7 @@ document.getElementById("resultado");
 const lista =
 document.getElementById("lista");
 
-
-// 👨‍🎓 banco local
 let alunos = [];
-
-try{
-
-  alunos =
-  JSON.parse(
-    localStorage.getItem("alunos")
-  ) || [];
-
-}catch{
-
-  alunos = [];
-
-}
-
 
 let faceMatcher;
 
@@ -34,83 +18,109 @@ let faceMatcher;
 // 🚀 INICIAR
 async function iniciar(){
 
-  resultado.innerHTML =
-  "📦 Carregando IA...";
+  try{
+
+    resultado.innerHTML =
+    "💾 Iniciando banco...";
 
 
-  // 📦 modelos
-  await faceapi
-  .nets
-  .tinyFaceDetector
-  .loadFromUri("./models");
-
-  await faceapi
-  .nets
-  .faceLandmark68Net
-  .loadFromUri("./models");
-
-  await faceapi
-  .nets
-  .faceRecognitionNet
-  .loadFromUri("./models");
+    await iniciarDB();
 
 
-  resultado.innerHTML =
-  "🎥 Abrindo câmera...";
+    alunos =
+    await listarAlunosDB();
 
 
-  // 📱 detectar celular
-  const mobile =
-  /Android|iPhone|iPad|iPod/i
-  .test(navigator.userAgent);
+    resultado.innerHTML =
+    "📦 Carregando IA...";
 
 
-  // 🎥 abrir câmera
-  const stream =
-  await navigator
-  .mediaDevices
-  .getUserMedia({
+    // 🧠 carregar modelos
+    await faceapi
+    .nets
+    .tinyFaceDetector
+    .loadFromUri("./models");
 
-    video: mobile
+    await faceapi
+    .nets
+    .faceLandmark68Net
+    .loadFromUri("./models");
 
-    ? {
+    await faceapi
+    .nets
+    .faceRecognitionNet
+    .loadFromUri("./models");
 
-        facingMode:"user",
 
-        width:{
-          ideal:1280
-        },
+    resultado.innerHTML =
+    "🎥 Abrindo câmera...";
 
-        height:{
-          ideal:720
+
+    // 📱 detectar celular
+    const mobile =
+    /Android|iPhone|iPad|iPod/i
+    .test(navigator.userAgent);
+
+
+    // 🎥 abrir câmera
+    const stream =
+    await navigator
+    .mediaDevices
+    .getUserMedia({
+
+      video: mobile
+
+      ? {
+
+          facingMode:"user",
+
+          width:{
+            ideal:1280
+          },
+
+          height:{
+            ideal:720
+          }
+
         }
 
-      }
+      : {
 
-    : {
+          width:{
+            ideal:1280
+          },
 
-        width:{
-          ideal:1280
-        },
+          height:{
+            ideal:720
+          }
 
-        height:{
-          ideal:720
         }
 
-      }
-
-  });
+    });
 
 
-  video.srcObject = stream;
+    video.srcObject = stream;
 
 
-  carregarMatcher();
+    carregarMatcher();
 
-  renderLista();
+    renderLista();
 
-  resultado.innerHTML =
-  "✅ Sistema iniciado";
+
+    resultado.innerHTML =
+    "✅ Sistema iniciado";
+
+  }
+
+  catch(erro){
+
+    console.error(erro);
+
+    resultado.innerHTML =
+
+    "❌ Erro ao iniciar sistema";
+
+  }
 
 }
 
@@ -172,7 +182,7 @@ async ()=>{
   }
 
 
-  // 📸 capturar foto
+  // 📸 FOTO
   const captura =
   document.createElement(
     "canvas"
@@ -188,13 +198,9 @@ async ()=>{
   captura.getContext("2d");
 
   ctx.drawImage(
-
     video,
-
     0,
-
     0
-
   );
 
   const foto =
@@ -203,7 +209,7 @@ async ()=>{
   );
 
 
-  alunos.push({
+  const aluno = {
 
     nome,
 
@@ -216,16 +222,16 @@ async ()=>{
 
     registros:[]
 
-  });
+  };
 
 
-  localStorage.setItem(
-
-    "alunos",
-
-    JSON.stringify(alunos)
-
+  await adicionarAlunoDB(
+    aluno
   );
+
+
+  alunos =
+  await listarAlunosDB();
 
 
   carregarMatcher();
@@ -236,10 +242,6 @@ async ()=>{
   resultado.innerHTML =
   `✅ ${nome} cadastrado`;
 
-  alert(
-    "Aluno cadastrado!"
-  );
-
 });
 
 
@@ -247,6 +249,8 @@ async ()=>{
 function carregarMatcher(){
 
   if(alunos.length === 0){
+
+    faceMatcher = null;
 
     return;
 
@@ -287,7 +291,7 @@ function carregarMatcher(){
 }
 
 
-// 📋 RENDER LISTA
+// 📋 LISTA
 function renderLista(){
 
   const busca =
@@ -309,7 +313,7 @@ function renderLista(){
 
   lista.innerHTML =
 
-  filtrados.map((a,index)=>`
+  filtrados.map(a=>`
 
     <div class="aluno">
 
@@ -326,20 +330,10 @@ function renderLista(){
           ${a.registros.length}
         </p>
 
-        <small>
-
-          ${
-            a.registros
-            .slice(-5)
-            .join(" | ")
-          }
-
-        </small>
-
       </div>
 
       <button
-      onclick="excluirAluno(${index})">
+      onclick="excluirAluno(${a.id})">
 
         Excluir
 
@@ -352,7 +346,7 @@ function renderLista(){
 }
 
 
-// 🔍 BUSCAR
+// 🔍 BUSCA
 document
 .getElementById("buscar")
 .addEventListener(
@@ -362,7 +356,7 @@ renderLista
 
 
 // ❌ EXCLUIR
-function excluirAluno(index){
+async function excluirAluno(id){
 
   const confirmar =
   confirm(
@@ -376,16 +370,11 @@ function excluirAluno(index){
   }
 
 
-  alunos.splice(index,1);
+  await excluirAlunoDB(id);
 
 
-  localStorage.setItem(
-
-    "alunos",
-
-    JSON.stringify(alunos)
-
-  );
+  alunos =
+  await listarAlunosDB();
 
 
   carregarMatcher();
@@ -393,6 +382,42 @@ function excluirAluno(index){
   renderLista();
 
 }
+
+
+// 🗑 RESETAR BANCO
+document
+.getElementById("resetarBanco")
+.addEventListener(
+"click",
+()=>{
+
+  const confirmar =
+  confirm(
+
+    "Apagar TODOS os alunos?"
+
+  );
+
+  if(!confirmar){
+
+    return;
+
+  }
+
+
+  indexedDB.deleteDatabase(
+    "EduBlockDB"
+  );
+
+
+  alert(
+    "Banco apagado!"
+  );
+
+
+  location.reload();
+
+});
 
 
 // 🔍 RECONHECIMENTO
@@ -472,17 +497,14 @@ video.addEventListener(
     ctx.clearRect(
 
       0,
-
       0,
-
       canvas.width,
-
       canvas.height
 
     );
 
 
-    resized.forEach(d=>{
+    resized.forEach(async d=>{
 
 
       const resultadoFace =
@@ -529,7 +551,6 @@ video.addEventListener(
       `✅ ${nomeDetectado}`;
 
 
-      // 👨‍🎓 procurar aluno
       const aluno =
       alunos.find(a=>
 
@@ -551,7 +572,6 @@ video.addEventListener(
         ];
 
 
-        // evitar spam
         if(ultimo !== agora){
 
           aluno.registros.push(
@@ -559,16 +579,9 @@ video.addEventListener(
           );
 
 
-          localStorage.setItem(
-
-            "alunos",
-
-            JSON.stringify(alunos)
-
+          await atualizarAlunoDB(
+            aluno
           );
-
-
-          renderLista();
 
         }
 
