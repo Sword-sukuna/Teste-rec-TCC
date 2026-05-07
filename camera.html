@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📱 Câmera</title>
+</head>
+
+<body>
+
+<h2>📱 Webcam Ativa</h2>
+
+<video id="video" autoplay playsinline muted></video>
+
+<script>
+
+let pc = new RTCPeerConnection({
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" }
+  ]
+});
+
+let video = document.getElementById("video");
+
+async function start() {
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: "user" },
+    audio: false
+  });
+
+  video.srcObject = stream;
+
+  // 📡 envia tracks pro PC
+  stream.getTracks().forEach(track => {
+    pc.addTrack(track, stream);
+  });
+
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+
+  // 🔥 exibe offer pra colar no PC (simples sem servidor)
+  document.body.innerHTML += `
+    <textarea style="width:100%;height:150px;">
+    ${JSON.stringify(pc.localDescription)}
+    </textarea>
+  `;
+
+}
+
+start();
+
+</script>
+
+</body>
+</html>
