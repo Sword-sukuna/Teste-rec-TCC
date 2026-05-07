@@ -3,7 +3,7 @@ let peerConnection;
 let dataChannel;
 
 
-// 🔑 config STUN
+// 🔑 configuração STUN
 const config = {
   iceServers: [
     {
@@ -13,56 +13,67 @@ const config = {
 };
 
 
-// 🚀 iniciar conexão
+// 🚀 criar conexão base
 function criarConexao() {
+
   peerConnection = new RTCPeerConnection(config);
 
+  // 📡 receber canal (celular ou PC)
   peerConnection.ondatachannel = (event) => {
     dataChannel = event.channel;
     configurarCanal();
   };
+
 }
 
 
-// ⚡ canal de dados
+// ⚡ configurar canal de dados
 function configurarCanal() {
+
   dataChannel.onopen = () => {
-    adicionarLog("📡 Conectado com sucesso");
+    adicionarLog("📡 Conexão ativa");
   };
 
   dataChannel.onmessage = async (event) => {
+
     const dados = JSON.parse(event.data);
 
     if (dados.tipo === "novoAluno") {
+
       await adicionarAlunoDB(dados.aluno);
 
       alunos = await listarAlunosDB();
+
       carregarMatcher();
       renderLista();
 
       adicionarLog(`👨‍🎓 ${dados.aluno.nome} sincronizado`);
     }
+
   };
+
 }
 
 
 // 📤 enviar aluno
 function enviarAluno(aluno) {
+
   if (dataChannel && dataChannel.readyState === "open") {
-    dataChannel.send(
-      JSON.stringify({
-        tipo: "novoAluno",
-        aluno
-      })
-    );
+
+    dataChannel.send(JSON.stringify({
+      tipo: "novoAluno",
+      aluno
+    }));
 
     adicionarLog(`📤 Enviado: ${aluno.nome}`);
   }
+
 }
 
 
 // 📋 logs
 function adicionarLog(texto) {
+
   const logs = document.getElementById("logs");
 
   const div = document.createElement("div");
@@ -77,7 +88,7 @@ function adicionarLog(texto) {
 criarConexao();
 
 
-// 📱 GERAR QR CODE (PC -> celular)
+// 📱 GERAR QR (PC → celular)
 document.getElementById("criarOffer").addEventListener("click", async () => {
 
   dataChannel = peerConnection.createDataChannel("dados");
@@ -86,8 +97,10 @@ document.getElementById("criarOffer").addEventListener("click", async () => {
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
 
-  // ⏳ espera ICE
+
+  // ⏳ esperar ICE completo
   await new Promise((resolve) => {
+
     if (peerConnection.iceGatheringState === "complete") {
       resolve();
     } else {
@@ -97,12 +110,13 @@ document.getElementById("criarOffer").addEventListener("click", async () => {
         }
       });
     }
+
   });
 
 
   const offerFinal = JSON.stringify(peerConnection.localDescription);
 
-  // 🔥 URL CORRIGIDA (SEM 404)
+  // 🔥 URL CORRETA (GitHub Pages seguro)
   const baseUrl = window.location.href.split("?")[0];
 
   const link = `${baseUrl}?offer=${encodeURIComponent(offerFinal)}`;
@@ -112,7 +126,8 @@ document.getElementById("criarOffer").addEventListener("click", async () => {
   const qrDiv = document.getElementById("qrcode");
   qrDiv.innerHTML = "";
 
-  QRCode.toCanvas(link, { width: 300 }, (err, canvas) => {
+  QRCode.toCanvas(link, { width: 280 }, (err, canvas) => {
+
     if (err) {
       console.error(err);
       return;
@@ -124,7 +139,7 @@ document.getElementById("criarOffer").addEventListener("click", async () => {
 });
 
 
-// 📱 CELULAR abre e responde automaticamente
+// 📱 CELULAR (responde automaticamente)
 window.addEventListener("load", async () => {
 
   const params = new URLSearchParams(location.search);
@@ -133,6 +148,10 @@ window.addEventListener("load", async () => {
   if (!offerTexto) return;
 
   try {
+
+    // 🔥 garante conexão criada no celular também
+    criarConexao();
+
     const offer = JSON.parse(decodeURIComponent(offerTexto));
 
     await peerConnection.setRemoteDescription(offer);
@@ -140,10 +159,27 @@ window.addEventListener("load", async () => {
     const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);
 
-    adicionarLog("📱 Conectado ao PC via QR");
+
+    // ⏳ esperar ICE completo também no celular
+    await new Promise((resolve) => {
+
+      if (peerConnection.iceGatheringState === "complete") {
+        resolve();
+      } else {
+        peerConnection.addEventListener("icegatheringstatechange", () => {
+          if (peerConnection.iceGatheringState === "complete") {
+            resolve();
+          }
+        });
+      }
+
+    });
+
+
+    adicionarLog("📱 Celular conectado com sucesso");
 
   } catch (err) {
-    console.error(err);
+    console.error("Erro WebRTC:", err);
   }
 
 });
