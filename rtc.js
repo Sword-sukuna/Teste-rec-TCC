@@ -1,94 +1,110 @@
 
-// 📡 conexão
 let pc;
-let dataChannel;
 
 
+// =============================
 // 🔑 iniciar conexão
-function iniciarRTC() {
-
+// =============================
+function criarPC() {
   pc = new RTCPeerConnection({
     iceServers: [
       { urls: "stun:stun.l.google.com:19302" }
     ]
   });
-
 }
 
 
-// 📡 gerar QR (PC → celular)
-async function gerarQRCode() {
+// =============================
+// 📷 QR CAMERA (PC → celular)
+// =============================
+async function gerarQRCodeCamera() {
 
-  iniciarRTC();
-
-  dataChannel = pc.createDataChannel("dados");
-
-  configurarCanal();
+  criarPC();
 
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
 
   await esperarICE();
 
+
   const link = window.location.href.split("?")[0] +
-    "?offer=" + encodeURIComponent(JSON.stringify(pc.localDescription));
+    "?camera=" + encodeURIComponent(JSON.stringify(pc.localDescription));
+
 
   QRCode.toCanvas(link, { width: 250 }, (err, canvas) => {
-    if (!err) document.getElementById("qrcode").appendChild(canvas);
+    if (!err) {
+      const div = document.getElementById("qrcode");
+      div.innerHTML = "";
+      div.appendChild(canvas);
+    }
   });
 
 }
 
 
-// 📥 celular recebe e responde
-window.addEventListener("load", async () => {
+// =============================
+// 📱 celular (envia câmera)
+// =============================
+async function iniciarCameraMobile(offer) {
 
-  const params = new URLSearchParams(location.search);
-  const offer = params.get("offer");
+  criarPC();
 
-  if (!offer) return;
+  await pc.setRemoteDescription(offer);
 
-  iniciarRTC();
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: true,
+    audio: false
+  });
 
-  const remote = JSON.parse(decodeURIComponent(offer));
-
-  await pc.setRemoteDescription(remote);
+  stream.getTracks().forEach(track => {
+    pc.addTrack(track, stream);
+  });
 
   const answer = await pc.createAnswer();
   await pc.setLocalDescription(answer);
 
-});
+}
 
 
-// 📡 canal de dados
-function configurarCanal() {
+// =============================
+// 💻 PC recebe vídeo
+// =============================
+function receberVideo() {
 
-  pc.ondatachannel = (event) => {
+  pc.ontrack = (event) => {
 
-    const channel = event.channel;
+    const video = document.getElementById("video");
 
-    channel.onmessage = async (e) => {
-
-      const dados = JSON.parse(e.data);
-
-      if (dados.tipo === "aluno") {
-
-        await adicionarAlunoDB(dados.aluno);
-
-        alunos = await listarAlunosDB();
-
-        renderLista();
-
-      }
-
-    };
+    if (!video.srcObject) {
+      video.srcObject = event.streams[0];
+    }
 
   };
 
 }
 
 
-// ⏳ ICE
+// =============================
+// 📥 detectar modo URL
+// =============================
+window.addEventListener("load", async () => {
+
+  const params = new URLSearchParams(location.search);
+
+  const camera = params.get("camera");
+
+  if (!camera) return;
+
+  const offer = JSON.parse(decodeURIComponent(camera));
+
+  await iniciarCameraMobile(offer);
+
+});
+
+
+// =============================
+// ⏳ ICE helper
+// =============================
 function esperarICE() {
 
   return new Promise(resolve => {
