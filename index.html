@@ -2,39 +2,12 @@
 <html lang="pt-BR">
 
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
->
-
-<title>EduBlock Vision</title>
+<title>Sistema de Presença Facial</title>
 
 <link rel="stylesheet" href="style.css">
-
-
-<!-- 🧠 Face API -->
-<script defer
-src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js">
-</script>
-
-
-<!-- 📱 QRCode -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-
-
-<!-- 💾 Banco -->
-<script defer src="db.js"></script>
-
-
-<!-- 📡 RTC -->
-<script defer src="rtc.js"></script>
-
-
-<!-- ⚡ Sistema -->
-<script defer src="script.js"></script>
 
 </head>
 
@@ -42,123 +15,84 @@ src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js">
 
 <div class="container">
 
-<h1>🎓 EduBlock Vision</h1>
+<h1>🎓 Sistema de Presença Facial</h1>
 
-
-<!-- 📡 RTC -->
+<!-- ========================= -->
+<!-- 📷 CÂMERA QR -->
+<!-- ========================= -->
 <div class="rtcBox">
 
-<h2>📡 Conexão automática</h2>
+<h2>📷 Conexão Câmera (Mobile)</h2>
 
-<button id="criarOffer">
-
-📱 Gerar QR Code
-
+<button onclick="gerarQRCodeCamera()">
+📷 Gerar QR da Câmera
 </button>
 
 <div id="qrcode"></div>
 
-<textarea
-id="offer"
-placeholder="Offer"
-style="display:none;"
-></textarea>
-
-<textarea
-id="answer"
-placeholder="Answer"
-style="display:none;"
-></textarea>
-
 </div>
 
 
-<!-- 👨‍🎓 CADASTRO -->
-<div class="cadastro">
-
-<h2>👨‍🎓 Cadastro facial</h2>
-
-<input
-type="text"
-id="nome"
-placeholder="Nome do aluno"
->
-
-<button id="cadastrar">
-
-Cadastrar rosto
-
-</button>
-
-</div>
-
-
-<!-- 🔍 BUSCA -->
-<input
-type="text"
-id="buscar"
-placeholder="🔍 Buscar aluno"
-class="buscar"
->
-
-
-<!-- 🗑 RESET -->
-<div class="ferramentas">
-
-<button id="resetarBanco">
-
-🗑 Resetar banco
-
-</button>
-
-</div>
-
-
-<!-- 🎥 CAMERA -->
+<!-- ========================= -->
+<!-- 📹 VÍDEO RECEBIDO -->
+<!-- ========================= -->
 <div class="cameraBox">
 
-<video
-id="video"
-autoplay
-muted
-playsinline
-></video>
+<h2>📡 Stream da Câmera</h2>
 
-<canvas id="canvas"></canvas>
+<video id="video" autoplay playsinline></video>
 
 </div>
 
 
-<!-- 📋 STATUS -->
-<div id="resultado">
+<!-- ========================= -->
+<!-- 👨‍🎓 CADASTRO -->
+<!-- ========================= -->
+<div class="cadastro">
 
-📦 Inicializando sistema...
+<h2>👨‍🎓 Cadastro de Alunos</h2>
+
+<input type="text" id="nome" placeholder="Nome do aluno">
+
+<button id="cadastrar">
+Cadastrar
+</button>
 
 </div>
 
 
-<!-- 👨‍🎓 LISTA -->
-<h2>👨‍🎓 Alunos cadastrados</h2>
-
+<!-- ========================= -->
+<!-- 📋 LISTA -->
+<!-- ========================= -->
 <div id="lista"></div>
 
 
+<!-- ========================= -->
 <!-- 📋 LOGS -->
-<h2>📋 Eventos</h2>
-
+<!-- ========================= -->
 <div id="logs"></div>
 
 </div>
 
-<h2>📷 Conexão Câmera</h2>
+<!-- ========================= -->
+<!-- 🔥 SCRIPTS (ORDEM IMPORTA!) -->
+<!-- ========================= -->
 
-<button onclick="gerarQRCodeCamera()">
-Gerar QR da Câmera
-</button>
+<!-- QR CODE -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
-<div id="qrcode"></div>
+<!-- FACE API -->
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
-<video id="video" autoplay playsinline></video>
+<!-- DB -->
+<script defer src="db.js"></script>
+
+<!-- RTC (CÂMERA + QR) -->
+<script defer src="rtc.js"></script>
+
+<!-- MAIN LOGIC -->
+<script defer src="script.js"></script>
 
 </body>
+
 </html>

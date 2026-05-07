@@ -3,53 +3,109 @@ let pc;
 
 
 // =============================
-// 🔑 iniciar conexão
+// 🔑 criar conexão
 // =============================
 function criarPC() {
+
   pc = new RTCPeerConnection({
     iceServers: [
       { urls: "stun:stun.l.google.com:19302" }
     ]
   });
+
 }
 
 
 // =============================
-// 📷 QR CAMERA (PC → celular)
+// 📷 GERAR QR DA CÂMERA (PC)
 // =============================
 async function gerarQRCodeCamera() {
 
-  criarPC();
+  try {
 
-  const offer = await pc.createOffer();
-  await pc.setLocalDescription(offer);
+    criarPC();
 
-  await esperarICE();
+    // 🔥 cria offer primeiro
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    // ⏳ espera ICE
+    await new Promise(resolve => {
+
+      if (pc.iceGatheringState === "complete") resolve();
+
+      pc.addEventListener("icegatheringstatechange", () => {
+        if (pc.iceGatheringState === "complete") resolve();
+      });
+
+      // fallback
+      setTimeout(resolve, 2000);
+
+    });
 
 
-  const link = window.location.href.split("?")[0] +
-    "?camera=" + encodeURIComponent(JSON.stringify(pc.localDescription));
+    // 🔥 monta link
+    const base = window.location.href.split("?")[0];
+
+    const link = `${base}?camera=${encodeURIComponent(
+      JSON.stringify(pc.localDescription)
+    )}`;
 
 
-  QRCode.toCanvas(link, { width: 250 }, (err, canvas) => {
-    if (!err) {
-      const div = document.getElementById("qrcode");
-      div.innerHTML = "";
-      div.appendChild(canvas);
+    console.log("QR LINK:", link);
+
+
+    // 📱 gera QR
+    const div = document.getElementById("qrcode");
+
+    if (!div) {
+      console.error("div #qrcode não encontrada");
+      return;
     }
-  });
+
+    div.innerHTML = "";
+
+
+    if (typeof QRCode === "undefined") {
+      alert("QRCode.js não carregou!");
+      return;
+    }
+
+    QRCode.toCanvas(link, { width: 280 }, (err, canvas) => {
+
+      if (err) {
+        console.error("Erro QR:", err);
+        return;
+      }
+
+      div.appendChild(canvas);
+
+    });
+
+
+  } catch (err) {
+    console.error("Erro gerar QR câmera:", err);
+  }
 
 }
 
 
 // =============================
-// 📱 celular (envia câmera)
+// 📱 CELULAR (recebe câmera)
 // =============================
-async function iniciarCameraMobile(offer) {
+window.addEventListener("load", async () => {
+
+  const params = new URLSearchParams(location.search);
+  const camera = params.get("camera");
+
+  if (!camera) return;
 
   criarPC();
 
+  const offer = JSON.parse(decodeURIComponent(camera));
+
   await pc.setRemoteDescription(offer);
+
 
   const stream = await navigator.mediaDevices.getUserMedia({
     video: true,
@@ -60,61 +116,26 @@ async function iniciarCameraMobile(offer) {
     pc.addTrack(track, stream);
   });
 
+
   const answer = await pc.createAnswer();
   await pc.setLocalDescription(answer);
-
-}
-
-
-// =============================
-// 💻 PC recebe vídeo
-// =============================
-function receberVideo() {
-
-  pc.ontrack = (event) => {
-
-    const video = document.getElementById("video");
-
-    if (!video.srcObject) {
-      video.srcObject = event.streams[0];
-    }
-
-  };
-
-}
-
-
-// =============================
-// 📥 detectar modo URL
-// =============================
-window.addEventListener("load", async () => {
-
-  const params = new URLSearchParams(location.search);
-
-  const camera = params.get("camera");
-
-  if (!camera) return;
-
-  const offer = JSON.parse(decodeURIComponent(camera));
-
-  await iniciarCameraMobile(offer);
 
 });
 
 
 // =============================
-// ⏳ ICE helper
+// 💻 PC recebe vídeo
 // =============================
-function esperarICE() {
+function iniciarRecepcao() {
 
-  return new Promise(resolve => {
+  pc.ontrack = (event) => {
 
-    if (pc.iceGatheringState === "complete") resolve();
+    const video = document.getElementById("video");
 
-    else pc.addEventListener("icegatheringstatechange", () => {
-      if (pc.iceGatheringState === "complete") resolve();
-    });
+    if (video && !video.srcObject) {
+      video.srcObject = event.streams[0];
+    }
 
-  });
+  };
 
 }
