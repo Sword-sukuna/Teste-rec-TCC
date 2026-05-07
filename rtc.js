@@ -1,111 +1,108 @@
-// 📡 WebRTC
-let peerConnection;
+
+// 📡 conexão geral
+let pc;
 let dataChannel;
+let videoSender;
 
 
-// 🔑 configuração STUN
+// 🔑 config
 const config = {
   iceServers: [
-    {
-      urls: "stun:stun.l.google.com:19302"
-    }
+    { urls: "stun:stun.l.google.com:19302" }
   ]
 };
 
 
 // 🚀 criar conexão base
-function criarConexao() {
-
-  peerConnection = new RTCPeerConnection(config);
-
-  // 📡 receber canal (celular ou PC)
-  peerConnection.ondatachannel = (event) => {
-    dataChannel = event.channel;
-    configurarCanal();
-  };
-
+function criarPC() {
+  pc = new RTCPeerConnection(config);
 }
 
 
-// ⚡ configurar canal de dados
-function configurarCanal() {
+// ================================
+// 📡 MODO DADOS (ALUNOS)
+// ================================
+async function gerarQRCodeDados() {
 
-  dataChannel.onopen = () => {
-    adicionarLog("📡 Conexão ativa");
-  };
+  criarPC();
 
-  dataChannel.onmessage = async (event) => {
+  dataChannel = pc.createDataChannel("dados");
 
-    const dados = JSON.parse(event.data);
-
-    if (dados.tipo === "novoAluno") {
-
-      await adicionarAlunoDB(dados.aluno);
-
-      alunos = await listarAlunosDB();
-
-      carregarMatcher();
-      renderLista();
-
-      adicionarLog(`👨‍🎓 ${dados.aluno.nome} sincronizado`);
-    }
-
-  };
-
-}
-
-
-// 📤 enviar aluno
-function enviarAluno(aluno) {
-
-  if (dataChannel && dataChannel.readyState === "open") {
-
-    dataChannel.send(JSON.stringify({
-      tipo: "novoAluno",
-      aluno
-    }));
-
-    adicionarLog(`📤 Enviado: ${aluno.nome}`);
-  }
-
-}
-
-
-// 📋 logs
-function adicionarLog(texto) {
-
-  const logs = document.getElementById("logs");
-
-  const div = document.createElement("div");
-  div.className = "logItem";
-  div.innerText = texto;
-
-  logs.prepend(div);
-}
-
-
-// 🚀 iniciar RTC
-criarConexao();
-
-
-// 📱 GERAR QR (PC → celular)
-document.getElementById("criarOffer").addEventListener("click", async () => {
-
-  dataChannel = peerConnection.createDataChannel("dados");
   configurarCanal();
 
-  const offer = await peerConnection.createOffer();
-  await peerConnection.setLocalDescription(offer);
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+
+  await esperarICE();
+
+  const link = gerarLink("data");
+
+  gerarQR(link);
+}
 
 
-  // ⏳ esperar ICE completo
-  await new Promise((resolve) => {
+// ================================
+// 📷 MODO CÂMERA (VÍDEO)
+// ================================
+async function gerarQRCodeCamera() {
 
-    if (peerConnection.iceGatheringState === "complete") {
+  criarPC();
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: true,
+    audio: false
+  });
+
+  stream.getTracks().forEach(track => {
+    pc.addTrack(track, stream);
+  });
+
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+
+  await esperarICE();
+
+  const link = gerarLink("camera");
+
+  gerarQR(link);
+}
+
+
+// 🔥 gerar link seguro
+function gerarLink(mode) {
+
+  const base = window.location.href.split("?")[0];
+
+  return `${base}?mode=${mode}&offer=${encodeURIComponent(
+    JSON.stringify(pc.localDescription)
+  )}`;
+}
+
+
+// 📱 QR CODE
+function gerarQR(link) {
+
+  const div = document.getElementById("qrcode");
+  div.innerHTML = "";
+
+  QRCode.toCanvas(link, { width: 280 }, (err, canvas) => {
+    if (err) return console.error(err);
+    div.appendChild(canvas);
+  });
+
+}
+
+
+// ⏳ esperar ICE
+function esperarICE() {
+
+  return new Promise(resolve => {
+
+    if (pc.iceGatheringState === "complete") {
       resolve();
     } else {
-      peerConnection.addEventListener("icegatheringstatechange", () => {
-        if (peerConnection.iceGatheringState === "complete") {
+      pc.addEventListener("icegatheringstatechange", () => {
+        if (pc.iceGatheringState === "complete") {
           resolve();
         }
       });
@@ -113,73 +110,79 @@ document.getElementById("criarOffer").addEventListener("click", async () => {
 
   });
 
-
-  const offerFinal = JSON.stringify(peerConnection.localDescription);
-
-  // 🔥 URL CORRETA (GitHub Pages seguro)
-  const baseUrl = window.location.href.split("?")[0];
-
-  const link = `${baseUrl}?offer=${encodeURIComponent(offerFinal)}`;
+}
 
 
-  // 📱 gerar QR
-  const qrDiv = document.getElementById("qrcode");
-  qrDiv.innerHTML = "";
-
-  QRCode.toCanvas(link, { width: 280 }, (err, canvas) => {
-
-    if (err) {
-      console.error(err);
-      return;
-    }
-
-    qrDiv.appendChild(canvas);
-  });
-
-});
-
-
-// 📱 CELULAR (responde automaticamente)
+// ================================
+// 📥 CELULAR (RECEBE MODE)
+// ================================
 window.addEventListener("load", async () => {
 
   const params = new URLSearchParams(location.search);
-  const offerTexto = params.get("offer");
 
-  if (!offerTexto) return;
+  const mode = params.get("mode");
+  const offer = params.get("offer");
 
-  try {
+  if (!mode || !offer) return;
 
-    // 🔥 garante conexão criada no celular também
-    criarConexao();
+  criarPC();
 
-    const offer = JSON.parse(decodeURIComponent(offerTexto));
+  const remoteOffer = JSON.parse(decodeURIComponent(offer));
 
-    await peerConnection.setRemoteDescription(offer);
+  await pc.setRemoteDescription(remoteOffer);
 
-    const answer = await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(answer);
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
 
+  await esperarICE();
 
-    // ⏳ esperar ICE completo também no celular
-    await new Promise((resolve) => {
-
-      if (peerConnection.iceGatheringState === "complete") {
-        resolve();
-      } else {
-        peerConnection.addEventListener("icegatheringstatechange", () => {
-          if (peerConnection.iceGatheringState === "complete") {
-            resolve();
-          }
-        });
-      }
-
-    });
+  console.log("📱 conectado no modo:", mode);
 
 
-    adicionarLog("📱 Celular conectado com sucesso");
+  // =========================
+  // 📡 MODO DADOS
+  // =========================
+  if (mode === "data") {
 
-  } catch (err) {
-    console.error("Erro WebRTC:", err);
+    pc.ondatachannel = (event) => {
+
+      dataChannel = event.channel;
+
+      dataChannel.onmessage = async (e) => {
+
+        const dados = JSON.parse(e.data);
+
+        if (dados.tipo === "novoAluno") {
+
+          await adicionarAlunoDB(dados.aluno);
+
+          alunos = await listarAlunosDB();
+
+          renderLista();
+
+        }
+
+      };
+
+    };
+
+  }
+
+
+  // =========================
+  // 📷 MODO CÂMERA
+  // =========================
+  if (mode === "camera") {
+
+    const video = document.createElement("video");
+    video.autoplay = true;
+    video.playsInline = true;
+    document.body.appendChild(video);
+
+    pc.ontrack = (event) => {
+      video.srcObject = event.streams[0];
+    };
+
   }
 
 });
