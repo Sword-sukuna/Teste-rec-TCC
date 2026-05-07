@@ -8,7 +8,6 @@
 <title>Sistema de Presença Facial</title>
 
 <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
@@ -17,82 +16,54 @@
 
 <h1>🎓 Sistema de Presença Facial</h1>
 
-<!-- ========================= -->
-<!-- 📷 CÂMERA QR -->
-<!-- ========================= -->
-<div class="rtcBox">
+<!-- 📷 QR CAMERA -->
+<div class="box">
 
-<h2>📷 Conexão Câmera (Mobile)</h2>
+<h2>📷 Conectar Câmera</h2>
 
 <button onclick="gerarQRCodeCamera()">
-📷 Gerar QR da Câmera
+Gerar QR da Câmera
 </button>
 
 <div id="qrcode"></div>
 
 </div>
 
+<!-- 📹 VÍDEO -->
+<div class="box">
 
-<!-- ========================= -->
-<!-- 📹 VÍDEO RECEBIDO -->
-<!-- ========================= -->
-<div class="cameraBox">
-
-<h2>📡 Stream da Câmera</h2>
+<h2>📡 Stream</h2>
 
 <video id="video" autoplay playsinline></video>
 
 </div>
 
-
-<!-- ========================= -->
 <!-- 👨‍🎓 CADASTRO -->
-<!-- ========================= -->
-<div class="cadastro">
+<div class="box">
 
-<h2>👨‍🎓 Cadastro de Alunos</h2>
+<h2>Cadastro</h2>
 
-<input type="text" id="nome" placeholder="Nome do aluno">
+<input id="nome" placeholder="Nome">
 
-<button id="cadastrar">
-Cadastrar
-</button>
+<button id="cadastrar">Cadastrar</button>
 
 </div>
 
-
-<!-- ========================= -->
 <!-- 📋 LISTA -->
-<!-- ========================= -->
 <div id="lista"></div>
 
-
-<!-- ========================= -->
 <!-- 📋 LOGS -->
-<!-- ========================= -->
 <div id="logs"></div>
 
 </div>
 
-<!-- ========================= -->
-<!-- 🔥 SCRIPTS (ORDEM IMPORTA!) -->
-<!-- ========================= -->
+<!-- 📦 SCRIPTS LOCAIS (SEM CDN) -->
+<script src="qrcode.min.js"></script>
+<script src="face-api.min.js"></script>
 
-<!-- QR CODE -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-
-<!-- FACE API -->
-<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-
-<!-- DB -->
 <script defer src="db.js"></script>
-
-<!-- RTC (CÂMERA + QR) -->
 <script defer src="rtc.js"></script>
-
-<!-- MAIN LOGIC -->
 <script defer src="script.js"></script>
 
 </body>
-
 </html>

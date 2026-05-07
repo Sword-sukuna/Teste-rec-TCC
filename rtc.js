@@ -3,7 +3,7 @@ let pc;
 
 
 // =============================
-// 🔑 criar conexão
+// 🔧 CRIAR CONEXÃO
 // =============================
 function criarPC() {
 
@@ -17,7 +17,7 @@ function criarPC() {
 
 
 // =============================
-// 📷 GERAR QR DA CÂMERA (PC)
+// 📷 GERAR QR DA CÂMERA
 // =============================
 async function gerarQRCodeCamera() {
 
@@ -25,87 +25,61 @@ async function gerarQRCodeCamera() {
 
     criarPC();
 
-    // 🔥 cria offer primeiro
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
 
-    // ⏳ espera ICE
-    await new Promise(resolve => {
+    await esperarICE();
 
-      if (pc.iceGatheringState === "complete") resolve();
-
-      pc.addEventListener("icegatheringstatechange", () => {
-        if (pc.iceGatheringState === "complete") resolve();
-      });
-
-      // fallback
-      setTimeout(resolve, 2000);
-
-    });
-
-
-    // 🔥 monta link
     const base = window.location.href.split("?")[0];
 
     const link = `${base}?camera=${encodeURIComponent(
       JSON.stringify(pc.localDescription)
     )}`;
 
+    const box = document.getElementById("qrcode");
 
-    console.log("QR LINK:", link);
+    if (!box) return;
 
-
-    // 📱 gera QR
-    const div = document.getElementById("qrcode");
-
-    if (!div) {
-      console.error("div #qrcode não encontrada");
-      return;
-    }
-
-    div.innerHTML = "";
-
+    box.innerHTML = "";
 
     if (typeof QRCode === "undefined") {
-      alert("QRCode.js não carregou!");
+      alert("QRCode não carregou!");
       return;
     }
 
     QRCode.toCanvas(link, { width: 280 }, (err, canvas) => {
 
       if (err) {
-        console.error("Erro QR:", err);
+        console.error(err);
         return;
       }
 
-      div.appendChild(canvas);
+      box.appendChild(canvas);
 
     });
 
-
-  } catch (err) {
-    console.error("Erro gerar QR câmera:", err);
+  } catch (e) {
+    console.error("Erro QR câmera:", e);
   }
 
 }
 
 
 // =============================
-// 📱 CELULAR (recebe câmera)
+// 📱 CELULAR RECEBE CÂMERA
 // =============================
 window.addEventListener("load", async () => {
 
   const params = new URLSearchParams(location.search);
-  const camera = params.get("camera");
+  const cam = params.get("camera");
 
-  if (!camera) return;
+  if (!cam) return;
 
   criarPC();
 
-  const offer = JSON.parse(decodeURIComponent(camera));
+  const offer = JSON.parse(decodeURIComponent(cam));
 
   await pc.setRemoteDescription(offer);
-
 
   const stream = await navigator.mediaDevices.getUserMedia({
     video: true,
@@ -116,7 +90,6 @@ window.addEventListener("load", async () => {
     pc.addTrack(track, stream);
   });
 
-
   const answer = await pc.createAnswer();
   await pc.setLocalDescription(answer);
 
@@ -124,18 +97,22 @@ window.addEventListener("load", async () => {
 
 
 // =============================
-// 💻 PC recebe vídeo
+// 📥 ICE SAFE
 // =============================
-function iniciarRecepcao() {
+function esperarICE() {
 
-  pc.ontrack = (event) => {
+  return new Promise(resolve => {
 
-    const video = document.getElementById("video");
+    if (!pc) return resolve();
 
-    if (video && !video.srcObject) {
-      video.srcObject = event.streams[0];
-    }
+    if (pc.iceGatheringState === "complete") return resolve();
 
-  };
+    pc.addEventListener("icegatheringstatechange", () => {
+      if (pc.iceGatheringState === "complete") resolve();
+    });
+
+    setTimeout(resolve, 3000);
+
+  });
 
 }
