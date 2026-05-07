@@ -15,10 +15,14 @@ content="width=device-width, initial-scale=1.0"
 <link rel="stylesheet" href="style.css">
 
 
-<!-- 🧠 IA -->
+<!-- 🧠 Face API -->
 <script defer
 src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js">
 </script>
+
+
+<!-- 📱 QRCode -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 
 <!-- 💾 Banco -->
@@ -41,31 +45,29 @@ src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js">
 <h1>🎓 EduBlock Vision</h1>
 
 
-<!-- 📡 WEBRTC -->
+<!-- 📡 RTC -->
 <div class="rtcBox">
 
-<h2>📡 Conexão entre dispositivos</h2>
-
-<textarea
-id="offer"
-placeholder="Cole OFFER"
-></textarea>
+<h2>📡 Conexão automática</h2>
 
 <button id="criarOffer">
 
-Criar conexão
+📱 Gerar QR Code
 
 </button>
 
-<button id="criarAnswer">
+<div id="qrcode"></div>
 
-Responder conexão
-
-</button>
+<textarea
+id="offer"
+placeholder="Offer"
+style="display:none;"
+></textarea>
 
 <textarea
 id="answer"
-placeholder="Cole ANSWER"
+placeholder="Answer"
+style="display:none;"
 ></textarea>
 
 </div>
@@ -130,7 +132,7 @@ playsinline
 <!-- 📋 STATUS -->
 <div id="resultado">
 
-📦 Inicializando...
+📦 Inicializando sistema...
 
 </div>
 

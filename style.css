@@ -59,6 +59,12 @@ button{
 
 }
 
+button:hover{
+
+  opacity:0.9;
+
+}
+
 .buscar{
 
   margin-bottom:20px;
@@ -150,5 +156,22 @@ canvas{
   background:#eef2f7;
   padding:10px;
   border-radius:10px;
+
+}
+
+#qrcode{
+
+  margin-top:20px;
+
+  display:flex;
+  justify-content:center;
+
+}
+
+#qrcode canvas{
+
+  background:white;
+  padding:10px;
+  border-radius:16px;
 
 }

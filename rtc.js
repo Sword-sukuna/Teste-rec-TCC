@@ -1,4 +1,4 @@
-// 📡 conexão WebRTC
+// 📡 conexão
 let peerConnection;
 
 let dataChannel;
@@ -10,8 +10,10 @@ const config = {
   iceServers:[
 
     {
+
       urls:
       "stun:stun.l.google.com:19302"
+
     }
 
   ]
@@ -28,7 +30,6 @@ function criarConexao(){
   );
 
 
-  // 📡 receber canal
   peerConnection.ondatachannel =
   event=>{
 
@@ -39,48 +40,17 @@ function criarConexao(){
 
   };
 
-
-  // 🧊 ICE
-  peerConnection.onicecandidate =
-  event=>{
-
-    if(event.candidate){
-
-      console.log(
-
-        "ICE:",
-
-        JSON.stringify(
-          event.candidate
-        )
-
-      );
-
-    }
-
-  };
-
 }
 
 
-// ⚡ configurar canal
+// ⚡ canal
 function configurarCanal(){
 
   dataChannel.onopen =
   ()=>{
 
     adicionarLog(
-      "📡 Conexão estabelecida"
-    );
-
-  };
-
-
-  dataChannel.onclose =
-  ()=>{
-
-    adicionarLog(
-      "❌ Conexão encerrada"
+      "📡 Conectado"
     );
 
   };
@@ -92,12 +62,6 @@ function configurarCanal(){
     const dados =
     JSON.parse(
       event.data
-    );
-
-
-    console.log(
-      "📥 Recebido:",
-      dados
     );
 
 
@@ -159,20 +123,12 @@ function enviarAluno(aluno){
 
     );
 
-
-    adicionarLog(
-
-      `📤 ${aluno.nome}
-      enviado`
-
-    );
-
   }
 
 }
 
 
-// 📋 logs
+// 📋 log
 function adicionarLog(texto){
 
   const logs =
@@ -196,3 +152,211 @@ function adicionarLog(texto){
   logs.prepend(div);
 
 }
+
+
+// 🚀 iniciar
+criarConexao();
+
+
+// 📱 gerar QR
+document
+.getElementById("criarOffer")
+.addEventListener(
+"click",
+async ()=>{
+
+  dataChannel =
+  peerConnection
+  .createDataChannel(
+    "dados"
+  );
+
+  configurarCanal();
+
+
+  const offer =
+
+  await peerConnection
+  .createOffer();
+
+
+  await peerConnection
+  .setLocalDescription(
+    offer
+  );
+
+
+  // ⏳ ICE
+  await new Promise(resolve=>{
+
+    if(
+
+      peerConnection
+      .iceGatheringState ===
+      "complete"
+
+    ){
+
+      resolve();
+
+    }
+
+    else{
+
+      peerConnection
+      .addEventListener(
+
+        "icegatheringstatechange",
+
+        ()=>{
+
+          if(
+
+            peerConnection
+            .iceGatheringState ===
+            "complete"
+
+          ){
+
+            resolve();
+
+          }
+
+        }
+
+      );
+
+    }
+
+  });
+
+
+  const offerCompleta =
+
+  JSON.stringify(
+
+    peerConnection
+    .localDescription
+
+  );
+
+
+  const link =
+
+  `${location.origin}
+  ${location.pathname}
+  ?offer=${
+    encodeURIComponent(
+      offerCompleta
+    )
+  }`;
+
+
+  document
+  .getElementById("qrcode")
+  .innerHTML = "";
+
+
+  QRCode.toCanvas(
+
+    link,
+
+    {
+
+      width:300
+
+    },
+
+    (erro,canvas)=>{
+
+      if(erro){
+
+        console.error(
+          erro
+        );
+
+        return;
+
+      }
+
+
+      document
+      .getElementById("qrcode")
+      .appendChild(
+        canvas
+      );
+
+    }
+
+  );
+
+});
+
+
+// 📱 celular recebendo
+window.addEventListener(
+"load",
+async ()=>{
+
+  const params =
+  new URLSearchParams(
+    location.search
+  );
+
+
+  const offerTexto =
+  params.get("offer");
+
+
+  if(!offerTexto){
+
+    return;
+
+  }
+
+
+  try{
+
+    const offer =
+    JSON.parse(
+
+      decodeURIComponent(
+        offerTexto
+      )
+
+    );
+
+
+    await peerConnection
+    .setRemoteDescription(
+      offer
+    );
+
+
+    const answer =
+
+    await peerConnection
+    .createAnswer();
+
+
+    await peerConnection
+    .setLocalDescription(
+      answer
+    );
+
+
+    adicionarLog(
+      "📱 Dispositivo conectado"
+    );
+
+  }
+
+  catch(erro){
+
+    console.error(
+      erro
+    );
+
+  }
+
+});
