@@ -1,72 +1,73 @@
 
-let pc;
+// 🔥 ÚNICO pc (corrigido)
+window.pc = null;
 
 
 // =============================
-// 🔧 CRIAR CONEXÃO
+// 🔧 criar conexão
 // =============================
 function criarPC() {
 
-  pc = new RTCPeerConnection({
+  window.pc = new RTCPeerConnection({
     iceServers: [
       { urls: "stun:stun.l.google.com:19302" }
     ]
+  });
+
+  // 📹 RECEBER VÍDEO (CORREÇÃO DO PREVIEW)
+  window.pc.ontrack = (event) => {
+
+    const video = document.getElementById("video");
+
+    if (!video) return;
+
+    video.srcObject = event.streams[0];
+
+    video.onloadedmetadata = () => {
+      video.play().catch(e => console.log("autoplay bloqueado", e));
+    };
+
+  };
+
+}
+
+
+// =============================
+// 📷 GERAR QR CÂMERA
+// =============================
+async function gerarQRCodeCamera() {
+
+  criarPC();
+
+  const offer = await window.pc.createOffer();
+  await window.pc.setLocalDescription(offer);
+
+  await esperarICE();
+
+  const link = window.location.href.split("?")[0] +
+    "?camera=" + encodeURIComponent(JSON.stringify(window.pc.localDescription));
+
+  const box = document.getElementById("qrcode");
+
+  if (!box) return;
+
+  box.innerHTML = "";
+
+  if (!window.QRCode) {
+    alert("QRCode não carregou");
+    return;
+  }
+
+  QRCode.toCanvas(link, { width: 280 }, (err, canvas) => {
+    if (err) return console.error(err);
+    box.appendChild(canvas);
   });
 
 }
 
 
 // =============================
-// 📷 GERAR QR DA CÂMERA
-// =============================
-async function gerarQRCodeCamera() {
-
-  try {
-
-    criarPC();
-
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-
-    await esperarICE();
-
-    const base = window.location.href.split("?")[0];
-
-    const link = `${base}?camera=${encodeURIComponent(
-      JSON.stringify(pc.localDescription)
-    )}`;
-
-    const box = document.getElementById("qrcode");
-
-    if (!box) return;
-
-    box.innerHTML = "";
-
-    if (typeof QRCode === "undefined") {
-      alert("QRCode não carregou!");
-      return;
-    }
-
-    QRCode.toCanvas(link, { width: 280 }, (err, canvas) => {
-
-      if (err) {
-        console.error(err);
-        return;
-      }
-
-      box.appendChild(canvas);
-
-    });
-
-  } catch (e) {
-    console.error("Erro QR câmera:", e);
-  }
-
-}
-
-
-// =============================
-// 📱 CELULAR RECEBE CÂMERA
+// 📱 CELULAR
 // =============================
 window.addEventListener("load", async () => {
 
@@ -79,7 +80,7 @@ window.addEventListener("load", async () => {
 
   const offer = JSON.parse(decodeURIComponent(cam));
 
-  await pc.setRemoteDescription(offer);
+  await window.pc.setRemoteDescription(offer);
 
   const stream = await navigator.mediaDevices.getUserMedia({
     video: true,
@@ -87,28 +88,28 @@ window.addEventListener("load", async () => {
   });
 
   stream.getTracks().forEach(track => {
-    pc.addTrack(track, stream);
+    window.pc.addTrack(track, stream);
   });
 
-  const answer = await pc.createAnswer();
-  await pc.setLocalDescription(answer);
+  const answer = await window.pc.createAnswer();
+  await window.pc.setLocalDescription(answer);
 
 });
 
 
 // =============================
-// 📥 ICE SAFE
+// ⏳ ICE SAFE
 // =============================
 function esperarICE() {
 
   return new Promise(resolve => {
 
-    if (!pc) return resolve();
+    if (!window.pc) return resolve();
 
-    if (pc.iceGatheringState === "complete") return resolve();
+    if (window.pc.iceGatheringState === "complete") return resolve();
 
-    pc.addEventListener("icegatheringstatechange", () => {
-      if (pc.iceGatheringState === "complete") resolve();
+    window.pc.addEventListener("icegatheringstatechange", () => {
+      if (window.pc.iceGatheringState === "complete") resolve();
     });
 
     setTimeout(resolve, 3000);

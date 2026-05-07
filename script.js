@@ -1,11 +1,12 @@
 
+// DOM helper
 function $(id) {
   return document.getElementById(id);
 }
 
 
 // =============================
-// 🚀 INIT
+// INIT
 // =============================
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -19,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // =============================
-// 👨‍🎓 CADASTRAR
+// CADASTRAR
 // =============================
 function cadastrar() {
 
@@ -36,23 +37,5 @@ function cadastrar() {
   lista.appendChild(div);
 
   nome.value = "";
-
-}
-
-
-// =============================
-// 📋 LOG
-// =============================
-function log(msg) {
-
-  const logs = $("logs");
-
-  if (!logs) return;
-
-  const div = document.createElement("div");
-
-  div.innerText = msg;
-
-  logs.prepend(div);
 
 }
