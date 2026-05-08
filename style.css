@@ -1,11 +1,383 @@
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{display:flex;background:#0f172a;color:#fff}
-aside{width:220px;background:#111827;padding:20px;display:flex;flex-direction:column;gap:10px;height:100vh}
-button,input,textarea{padding:12px;border:none;border-radius:10px}
-button{background:#2563eb;color:#fff;cursor:pointer}
-main{flex:1;padding:25px}
-section{display:none}section.on{display:block}
-video{width:100%;max-width:700px;border-radius:20px;background:#000;margin-top:20px}
-.cards{display:flex;gap:20px}.card{background:#1e293b;padding:20px;border-radius:20px}
-#lista{display:flex;flex-direction:column;gap:10px;margin-top:20px}
-.aluno{background:#1e293b;padding:12px;border-radius:15px;display:flex;justify-content:space-between}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+}
+
+
+/* ========================= */
+/* 🌍 BODY */
+/* ========================= */
+body{
+
+  display:flex;
+
+  min-height:100vh;
+
+  background:#0f172a;
+
+  color:#fff;
+
+}
+
+
+/* ========================= */
+/* 📚 SIDEBAR */
+/* ========================= */
+aside{
+
+  width:230px;
+
+  background:#111827;
+
+  padding:25px 15px;
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:12px;
+
+  border-right:1px solid #1e293b;
+
+}
+
+aside h1{
+
+  text-align:center;
+
+  margin-bottom:20px;
+
+  font-size:24px;
+
+}
+
+aside button{
+
+  padding:14px;
+
+  border:none;
+
+  border-radius:12px;
+
+  background:#1e293b;
+
+  color:white;
+
+  cursor:pointer;
+
+  transition:0.2s;
+
+}
+
+aside button:hover{
+
+  background:#2563eb;
+
+}
+
+
+/* ========================= */
+/* 📄 MAIN */
+/* ========================= */
+main{
+
+  flex:1;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:flex-start;
+
+  padding:40px 20px;
+
+}
+
+
+/* ========================= */
+/* 📦 SECTION */
+/* ========================= */
+section{
+
+  display:none;
+
+  width:100%;
+
+  max-width:950px;
+
+  background:#111827;
+
+  padding:30px;
+
+  border-radius:25px;
+
+  box-shadow:
+    0 0 25px rgba(0,0,0,0.3);
+
+}
+
+section.on{
+
+  display:block;
+
+}
+
+
+/* ========================= */
+/* 📝 TÍTULOS */
+/* ========================= */
+h2{
+
+  margin-bottom:20px;
+
+  font-size:28px;
+
+}
+
+
+/* ========================= */
+/* 📊 CARDS */
+/* ========================= */
+.cards{
+
+  display:flex;
+
+  gap:20px;
+
+  flex-wrap:wrap;
+
+}
+
+.card{
+
+  flex:1;
+
+  min-width:200px;
+
+  background:#1e293b;
+
+  padding:25px;
+
+  border-radius:20px;
+
+  text-align:center;
+
+}
+
+.card h3{
+
+  font-size:40px;
+
+  margin-bottom:10px;
+
+}
+
+
+/* ========================= */
+/* 🧾 INPUTS */
+/* ========================= */
+input,
+textarea{
+
+  width:100%;
+
+  padding:14px;
+
+  margin-top:15px;
+
+  border:none;
+
+  border-radius:12px;
+
+  background:#1e293b;
+
+  color:white;
+
+  font-size:15px;
+
+}
+
+textarea{
+
+  min-height:140px;
+
+  resize:vertical;
+
+}
+
+
+/* ========================= */
+/* 🔘 BOTÕES */
+/* ========================= */
+button{
+
+  padding:14px 20px;
+
+  border:none;
+
+  border-radius:12px;
+
+  background:#2563eb;
+
+  color:white;
+
+  cursor:pointer;
+
+  transition:0.2s;
+
+}
+
+button:hover{
+
+  opacity:0.9;
+
+}
+
+
+/* ========================= */
+/* 🎛 CONTAINER BOTÕES */
+/* ========================= */
+.botoes{
+
+  display:flex;
+
+  gap:15px;
+
+  margin-top:15px;
+
+  flex-wrap:wrap;
+
+}
+
+
+/* ========================= */
+/* 📹 VIDEO */
+/* ========================= */
+video{
+
+  width:100%;
+
+  max-width:700px;
+
+  margin:25px auto;
+
+  display:block;
+
+  border-radius:20px;
+
+  background:#000;
+
+  border:2px solid #1e293b;
+
+}
+
+
+/* ========================= */
+/* 📋 LISTA */
+/* ========================= */
+#lista{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:12px;
+
+  margin-top:25px;
+
+}
+
+.aluno{
+
+  background:#1e293b;
+
+  padding:15px 20px;
+
+  border-radius:15px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+}
+
+
+/* ========================= */
+/* 📷 QR */
+/* ========================= */
+#qrcode{
+
+  margin-top:25px;
+
+  display:flex;
+
+  justify-content:center;
+
+}
+
+
+/* ========================= */
+/* 📱 RESPONSIVO */
+/* ========================= */
+@media(max-width:900px){
+
+  body{
+
+    flex-direction:column;
+
+  }
+
+  aside{
+
+    width:100%;
+
+    height:auto;
+
+    flex-direction:row;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+    border-right:none;
+
+    border-bottom:1px solid #1e293b;
+
+  }
+
+  aside h1{
+
+    width:100%;
+
+  }
+
+  main{
+
+    padding:20px;
+
+  }
+
+  section{
+
+    padding:20px;
+
+  }
+
+  .cards{
+
+    flex-direction:column;
+
+  }
+
+  .botoes{
+
+    flex-direction:column;
+
+  }
+
+}
