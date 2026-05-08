@@ -1,31 +1,53 @@
 
-// =============================
+// =========================
 // 💾 DATABASE
-// =============================
+// =========================
 let db;
 
 
-// =============================
-// 🚀 ABRIR DATABASE
-// =============================
-const req =
-  indexedDB.open("FaceDB", 1);
+// =========================
+// 🚀 ABRIR DB
+// =========================
+const request =
+  indexedDB.open(
+    "FacePointDB",
+    1
+  );
 
 
-// =============================
+// =========================
 // 🛠 CRIAR TABELAS
-// =============================
-req.onupgradeneeded = e => {
+// =========================
+request.onupgradeneeded = e => {
 
   db = e.target.result;
 
-  // alunos
+  // pessoas
   if(
-    !db.objectStoreNames.contains("alunos")
+    !db.objectStoreNames.contains(
+      "pessoas"
+    )
   ){
 
     db.createObjectStore(
-      "alunos",
+      "pessoas",
+      {
+        keyPath:"id",
+        autoIncrement:true
+      }
+    );
+
+  }
+
+  // registros
+  if(
+    !db.objectStoreNames.contains(
+      "registros"
+    )
+  ){
+
+    db.createObjectStore(
+      "registros",
       {
         keyPath:"id",
         autoIncrement:true
@@ -37,87 +59,82 @@ req.onupgradeneeded = e => {
 };
 
 
-// =============================
+// =========================
 // ✅ DB OK
-// =============================
-req.onsuccess = e => {
+// =========================
+request.onsuccess = e => {
 
   db = e.target.result;
 
-  console.log("✅ Banco carregado");
+  console.log("✅ DB carregado");
 
-  // evita erro caso função ainda não exista
   if(
-    typeof carregarAlunos === "function"
+    typeof carregarPessoas
+    ===
+    "function"
   ){
-    carregarAlunos();
+    carregarPessoas();
+  }
+
+  if(
+    typeof carregarRegistros
+    ===
+    "function"
+  ){
+    carregarRegistros();
   }
 
 };
 
 
-// =============================
+// =========================
 // ❌ ERRO DB
-// =============================
-req.onerror = e => {
+// =========================
+request.onerror = e => {
 
   console.error(
-    "Erro IndexedDB:",
+    "Erro DB",
     e
   );
 
 };
 
 
-// =============================
-// 💾 SALVAR ALUNO
-// =============================
-function salvarAluno(aluno){
-
-  if(!db){
-
-    alert("Banco não carregado");
-
-    return;
-
-  }
+// =========================
+// 👤 SALVAR PESSOA
+// =========================
+function salvarPessoa(pessoa){
 
   const tx =
     db.transaction(
-      "alunos",
+      "pessoas",
       "readwrite"
     );
 
-  tx.objectStore("alunos")
-    .add(aluno);
-
-  tx.oncomplete = ()=>{
-
-    console.log("Aluno salvo");
-
-  };
+  tx.objectStore(
+    "pessoas"
+  ).add(pessoa);
 
 }
 
 
-// =============================
-// 📋 LISTAR
-// =============================
-function listarAlunos(callback){
-
-  if(!db) return;
+// =========================
+// 📋 LISTAR PESSOAS
+// =========================
+function listarPessoas(callback){
 
   const tx =
     db.transaction(
-      "alunos",
+      "pessoas",
       "readonly"
     );
 
   const req =
-    tx.objectStore("alunos")
-    .getAll();
+    tx.objectStore(
+      "pessoas"
+    ).getAll();
 
-  req.onsuccess = ()=>{
+  req.onsuccess = () => {
 
     callback(req.result);
 
@@ -126,32 +143,76 @@ function listarAlunos(callback){
 }
 
 
-// =============================
-// 🗑 EXCLUIR
-// =============================
-function deletarAluno(id){
-
-  if(!db) return;
+// =========================
+// 🗑 EXCLUIR PESSOA
+// =========================
+function deletarPessoa(id){
 
   const ok =
     confirm(
-      "Excluir aluno?"
+      "Excluir pessoa?"
     );
 
   if(!ok) return;
 
   const tx =
     db.transaction(
-      "alunos",
+      "pessoas",
       "readwrite"
     );
 
-  tx.objectStore("alunos")
-    .delete(id);
+  tx.objectStore(
+    "pessoas"
+  ).delete(id);
 
-  tx.oncomplete = ()=>{
+  tx.oncomplete = () => {
 
-    carregarAlunos();
+    carregarPessoas();
+
+  };
+
+}
+
+
+// =========================
+// 🕒 SALVAR REGISTRO
+// =========================
+function salvarRegistro(registro){
+
+  const tx =
+    db.transaction(
+      "registros",
+      "readwrite"
+    );
+
+  tx.objectStore(
+    "registros"
+  ).add(registro);
+
+}
+
+
+// =========================
+// 📋 LISTAR REGISTROS
+// =========================
+function listarRegistros(callback){
+
+  const tx =
+    db.transaction(
+      "registros",
+      "readonly"
+    );
+
+  const req =
+    tx.objectStore(
+      "registros"
+    ).getAll();
+
+  req.onsuccess = () => {
+
+    callback(
+      req.result.reverse()
+    );
 
   };
 
