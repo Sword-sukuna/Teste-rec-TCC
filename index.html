@@ -8,6 +8,7 @@
 <title>Sistema de Presença Facial</title>
 
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
@@ -16,7 +17,9 @@
 
 <h1>🎓 Sistema de Presença Facial</h1>
 
-<!-- 📷 QR CAMERA -->
+<!-- ========================= -->
+<!-- 📷 CONEXÃO CAMERA -->
+<!-- ========================= -->
 <div class="box">
 
 <h2>📷 Conectar Câmera</h2>
@@ -30,39 +33,104 @@ Gerar QR da Câmera
 </div>
 
 
+<!-- ========================= -->
 <!-- 📹 PREVIEW -->
+<!-- ========================= -->
 <div class="box">
 
 <h2>📡 Preview da Câmera</h2>
 
-<video id="video" autoplay playsinline></video>
+<video
+  id="video"
+  autoplay
+  playsinline
+  muted
+></video>
 
 </div>
 
 
-<!-- 👨‍🎓 CADASTRO -->
+<!-- ========================= -->
+<!-- 📥 ANSWER -->
+<!-- ========================= -->
 <div class="box">
 
-<h2>Cadastro</h2>
+<h2>📥 Conectar Celular</h2>
 
-<input id="nome" placeholder="Nome">
+<p>
+Depois de escanear o QR no celular,
+copie o código ANSWER e cole abaixo:
+</p>
 
-<button id="cadastrar">Cadastrar</button>
+<textarea
+  id="answer"
+  placeholder="Cole o ANSWER aqui..."
+></textarea>
+
+<br>
+
+<button onclick="receberAnswer()">
+Conectar Câmera
+</button>
 
 </div>
 
 
+<!-- ========================= -->
+<!-- 👨‍🎓 CADASTRO -->
+<!-- ========================= -->
+<div class="box">
+
+<h2>👨‍🎓 Cadastro</h2>
+
+<input
+  type="text"
+  id="nome"
+  placeholder="Nome do aluno"
+>
+
+<button id="cadastrar">
+Cadastrar
+</button>
+
+</div>
+
+
+<!-- ========================= -->
 <!-- 📋 LISTA -->
+<!-- ========================= -->
+<div class="box">
+
+<h2>📋 Alunos</h2>
+
 <div id="lista"></div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- 📋 LOGS -->
+<!-- ========================= -->
+<div class="box">
+
+<h2>📋 Logs</h2>
 
 <div id="logs"></div>
 
 </div>
 
-<!-- 📦 SCRIPTS LOCAIS -->
+</div>
+
+
+<!-- ========================= -->
+<!-- 📦 SCRIPTS -->
+<!-- ========================= -->
+
+<!-- LOCAL -->
 <script src="qrcode.min.js"></script>
 <script src="face-api.min.js"></script>
 
+<!-- SISTEMA -->
 <script defer src="db.js"></script>
 <script defer src="rtc.js"></script>
 <script defer src="script.js"></script>

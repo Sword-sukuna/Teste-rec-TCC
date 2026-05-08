@@ -1,14 +1,16 @@
 
+// =============================
+// 🌐 conexão global
+// =============================
 window.pc = null;
-let streamLocal = null;
 
 
 // =============================
-// 🔧 CRIAR PC (SEGURO)
+// 🔧 criar conexão
 // =============================
 function criarPC() {
 
-  // evita duplicar conexão (ERRO MUITO COMUM)
+  // fecha conexão antiga
   if (window.pc) {
     try {
       window.pc.close();
@@ -21,37 +23,28 @@ function criarPC() {
     ]
   });
 
-  console.log("🧠 PC criado");
-
   // =========================
-  // 📹 RECEBER VÍDEO (CRÍTICO)
+  // 📹 RECEBER STREAM NO PC
   // =========================
   window.pc.ontrack = (event) => {
 
-    console.log("📹 TRACK RECEBIDO");
+    console.log("📹 stream recebido");
 
     const video = document.getElementById("video");
 
     if (!video) {
-      console.error("❌ video não existe no DOM");
+      console.error("❌ elemento #video não encontrado");
       return;
     }
 
-    const [stream] = event.streams;
-
-    if (!stream) {
-      console.error("❌ stream vazio");
-      return;
-    }
-
-    video.srcObject = stream;
+    video.srcObject = event.streams[0];
 
     video.onloadedmetadata = async () => {
       try {
         await video.play();
-        console.log("▶️ vídeo rodando");
+        console.log("▶️ preview iniciado");
       } catch (err) {
-        console.warn("⚠️ autoplay bloqueado:", err);
+        console.error("Erro play vídeo:", err);
       }
     };
 
@@ -61,7 +54,7 @@ function criarPC() {
 
 
 // =============================
-// 📷 GERAR QR CAMERA (PC)
+// 📷 GERAR QR DA CAMERA
 // =============================
 async function gerarQRCodeCamera() {
 
@@ -70,103 +63,175 @@ async function gerarQRCodeCamera() {
     criarPC();
 
     const offer = await window.pc.createOffer();
-    await window.pc.setLocalDescription(offer);
 
-    console.log("📡 offer criado");
+    await window.pc.setLocalDescription(offer);
 
     await esperarICE();
 
-    const base = window.location.href.split("?")[0];
+    const link =
+      window.location.href.split("?")[0] +
+      "?camera=" +
+      encodeURIComponent(
+        JSON.stringify(window.pc.localDescription)
+      );
 
-    const link = `${base}?camera=${encodeURIComponent(
-      JSON.stringify(window.pc.localDescription)
-    )}`;
+    const qrcode = document.getElementById("qrcode");
 
-    const box = document.getElementById("qrcode");
-
-    if (!box) {
-      console.error("❌ #qrcode não existe");
+    if (!qrcode) {
+      console.error("❌ qrcode div não encontrada");
       return;
     }
 
-    box.innerHTML = "";
+    qrcode.innerHTML = "";
 
-    if (!window.QRCode) {
-      console.error("❌ QRCode não carregou");
-      return;
-    }
+    QRCode.toCanvas(
+      link,
+      { width: 280 },
+      (err, canvas) => {
 
-    QRCode.toCanvas(link, { width: 280 }, (err, canvas) => {
+        if (err) {
+          console.error("Erro QR:", err);
+          return;
+        }
 
-      if (err) {
-        console.error("❌ erro QR:", err);
-        return;
+        qrcode.appendChild(canvas);
+
       }
+    );
 
-      box.appendChild(canvas);
-
-      console.log("✅ QR gerado");
-
-    });
+    console.log("✅ QR gerado");
 
   } catch (err) {
-    console.error("❌ erro geral QR:", err);
+    console.error("Erro gerar QR:", err);
   }
 
 }
 
 
 // =============================
-// 📱 CELULAR (CÂMERA)
+// 📱 CELULAR
 // =============================
 window.addEventListener("load", async () => {
 
   const params = new URLSearchParams(location.search);
-  const cam = params.get("camera");
 
-  if (!cam) return;
+  const camera = params.get("camera");
+
+  if (!camera) return;
 
   try {
 
-    console.log("📱 modo câmera detectado");
+    console.log("📱 modo câmera");
 
     criarPC();
 
-    const offer = JSON.parse(decodeURIComponent(cam));
+    const offer = JSON.parse(
+      decodeURIComponent(camera)
+    );
 
     await window.pc.setRemoteDescription(offer);
 
-    console.log("📡 offer recebido");
+    // 📷 abrir câmera
+    const stream =
+      await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false
+      });
 
-    // abre câmera com fallback
-    streamLocal = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user" },
-      audio: false
+    // preview local no celular
+    const localVideo =
+      document.createElement("video");
+
+    localVideo.srcObject = stream;
+    localVideo.autoplay = true;
+    localVideo.playsInline = true;
+
+    localVideo.style.width = "100%";
+
+    document.body.appendChild(localVideo);
+
+    // enviar tracks
+    stream.getTracks().forEach(track => {
+      window.pc.addTrack(track, stream);
     });
 
-    if (!streamLocal) {
-      console.error("❌ câmera não abriu");
-      return;
-    }
+    // criar ANSWER
+    const answer =
+      await window.pc.createAnswer();
 
-    streamLocal.getTracks().forEach(track => {
-      window.pc.addTrack(track, streamLocal);
-    });
-
-    const answer = await window.pc.createAnswer();
     await window.pc.setLocalDescription(answer);
 
-    console.log("📡 answer enviada");
+    await esperarICE();
+
+    // =========================
+    // 📡 mostrar ANSWER
+    // =========================
+    const textarea =
+      document.createElement("textarea");
+
+    textarea.value =
+      JSON.stringify(window.pc.localDescription);
+
+    textarea.style.width = "95%";
+    textarea.style.height = "180px";
+
+    document.body.appendChild(textarea);
+
+    // botão copiar
+    const btn =
+      document.createElement("button");
+
+    btn.innerText = "📋 Copiar Answer";
+
+    btn.onclick = async () => {
+
+      await navigator.clipboard.writeText(
+        textarea.value
+      );
+
+      alert("Answer copiado");
+
+    };
+
+    document.body.appendChild(btn);
 
   } catch (err) {
-    console.error("❌ erro celular:", err);
+    console.error("Erro mobile:", err);
   }
 
 });
 
 
 // =============================
-// ⏳ ICE ROBUSTO
+// 💻 RECEBER ANSWER NO PC
+// =============================
+async function receberAnswer() {
+
+  try {
+
+    const txt =
+      document.getElementById("answer").value;
+
+    if (!txt) {
+      alert("Cole o answer");
+      return;
+    }
+
+    const answer = JSON.parse(txt);
+
+    await window.pc.setRemoteDescription(answer);
+
+    console.log("✅ conexão completa");
+
+  } catch (err) {
+    console.error("Erro answer:", err);
+  }
+
+}
+
+
+// =============================
+// ⏳ ICE
 // =============================
 function esperarICE() {
 
@@ -174,26 +239,28 @@ function esperarICE() {
 
     if (!window.pc) return resolve();
 
-    if (window.pc.iceGatheringState === "complete") {
-      console.log("ICE pronto");
-      return resolve();
+    if (
+      window.pc.iceGatheringState ===
+      "complete"
+    ) {
+      resolve();
     }
 
-    const timeout = setTimeout(() => {
-      console.warn("⏳ ICE timeout (continuando mesmo assim)");
-      resolve();
-    }, 4000);
+    window.pc.addEventListener(
+      "icegatheringstatechange",
+      () => {
 
-    window.pc.addEventListener("icegatheringstatechange", () => {
+        if (
+          window.pc.iceGatheringState ===
+          "complete"
+        ) {
+          resolve();
+        }
 
-      console.log("ICE:", window.pc.iceGatheringState);
-
-      if (window.pc.iceGatheringState === "complete") {
-        clearTimeout(timeout);
-        resolve();
       }
+    );
 
-    });
+    setTimeout(resolve, 3000);
 
   });
 
