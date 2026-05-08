@@ -8,16 +8,15 @@
 <meta
   name="viewport"
   content="width=device-width,initial-scale=1.0"
->
+/>
 
-<title>FacePresence</title>
+<title>FacePoint Mobile</title>
 
 <link
   rel="stylesheet"
   href="./style.css"
->
+/>
 
-<!-- evita favicon 404 -->
 <link rel="icon" href="data:,">
 
 </head>
@@ -26,128 +25,105 @@
 
 
 <!-- ========================= -->
-<!-- 📚 SIDEBAR -->
+<!-- 🌌 BACKGROUND -->
 <!-- ========================= -->
-<aside>
-
-<h1>🎓 FacePresence</h1>
-
-<button onclick="sec('dash')">
-Dashboard
-</button>
-
-<button onclick="sec('cad')">
-Cadastro
-</button>
-
-<button onclick="sec('cam')">
-Camera
-</button>
-
-</aside>
-
+<div class="bg"></div>
 
 
 <!-- ========================= -->
-<!-- 📄 CONTEÚDO -->
+<!-- 📱 APP -->
 <!-- ========================= -->
-<main>
+<div class="app">
 
 
-<!-- ========================= -->
-<!-- 📊 DASHBOARD -->
-<!-- ========================= -->
-<section id="dash" class="on">
+  <!-- HEADER -->
+  <header>
 
-<h2>Dashboard</h2>
+    <div class="logo">
 
-<div class="cards">
+      <div class="logo-circle">
+        👁
+      </div>
 
-<div class="card">
+      <div>
+        <h1>FacePoint</h1>
+        <p>Ponto Facial Inteligente</p>
+      </div>
 
-<h3 id="ta">0</h3>
+    </div>
 
-<p>Alunos</p>
+  </header>
+
+
+
+  <!-- CAMERA -->
+  <section class="camera-box">
+
+    <video
+      id="video"
+      autoplay
+      playsinline
+      muted
+    ></video>
+
+    <div class="camera-overlay"></div>
+
+  </section>
+
+
+
+  <!-- STATUS -->
+  <section class="status-box">
+
+    <div id="status">
+      🔎 Aguardando reconhecimento...
+    </div>
+
+  </section>
+
+
+
+  <!-- CADASTRO -->
+  <section class="card">
+
+    <h2>👤 Cadastrar Pessoa</h2>
+
+    <input
+      type="text"
+      id="nome"
+      placeholder="Nome da pessoa"
+    />
+
+    <button id="btnCadastrar">
+      Cadastrar Rosto
+    </button>
+
+  </section>
+
+
+
+  <!-- REGISTROS -->
+  <section class="card">
+
+    <h2>🕒 Registros de Ponto</h2>
+
+    <div id="registros"></div>
+
+  </section>
+
+
+
+  <!-- PESSOAS -->
+  <section class="card">
+
+    <h2>📋 Pessoas Cadastradas</h2>
+
+    <div id="lista"></div>
+
+  </section>
+
 
 </div>
-
-</div>
-
-</section>
-
-
-
-<!-- ========================= -->
-<!-- 👨‍🎓 CADASTRO -->
-<!-- ========================= -->
-<section id="cad">
-
-<h2>Cadastro Facial</h2>
-
-<input
-  id="nome"
-  placeholder="Nome do aluno"
->
-
-<div class="botoes">
-
-<button id="cap">
-Capturar Face
-</button>
-
-<button id="save">
-Salvar
-</button>
-
-</div>
-
-<input
-  id="busca"
-  placeholder="Buscar aluno"
->
-
-<!-- preview -->
-<video
-  id="video"
-  autoplay
-  playsinline
-  muted
-></video>
-
-<div id="lista"></div>
-
-</section>
-
-
-
-<!-- ========================= -->
-<!-- 📷 CAMERA MOBILE -->
-<!-- ========================= -->
-<section id="cam">
-
-<h2>Camera Mobile</h2>
-
-<button onclick="gerarQRCodeCamera()">
-Gerar QR
-</button>
-
-<div id="qrcode"></div>
-
-<h3>Answer</h3>
-
-<textarea
-  id="answer"
-  placeholder="Cole o answer aqui"
-></textarea>
-
-<button onclick="receberAnswer()">
-Conectar Camera
-</button>
-
-</section>
-
-
-</main>
 
 
 
@@ -155,16 +131,11 @@ Conectar Camera
 <!-- 📦 SCRIPTS -->
 <!-- ========================= -->
 
-<script src="./qrcode.min.js"></script>
-
 <script src="./face-api.min.js"></script>
 
 <script src="./db.js"></script>
 
-<script src="./rtc.js"></script>
-
 <script src="./script.js"></script>
-
 
 </body>
 </html>
