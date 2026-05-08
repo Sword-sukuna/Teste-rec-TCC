@@ -1,16 +1,13 @@
-
 // =========================
-// 🧠 FACEPOINT MOBILE
+// 🧠 FACEPOINT
 // =========================
-
-let faceAtual = null;
 
 let processando = false;
 
 // delay anti spam
 const delayRegistro = 10000;
 
-// ultimo registro
+// último registro
 let ultimoRegistro = {};
 
 
@@ -61,12 +58,11 @@ async function iniciarCamera(){
         audio:false
       });
 
-    const video =
-      document.getElementById(
+    document
+      .getElementById(
         "video"
-      );
-
-    video.srcObject = stream;
+      )
+      .srcObject = stream;
 
   }catch(e){
 
@@ -122,9 +118,12 @@ async function cadastrarPessoa(){
   processando = true;
 
   const nome =
-    document.getElementById(
+    document
+    .getElementById(
       "nome"
-    ).value.trim();
+    )
+    .value
+    .trim();
 
   if(!nome){
 
@@ -182,7 +181,8 @@ async function cadastrarPessoa(){
   document
     .getElementById(
       "nome"
-    ).value = "";
+    )
+    .value = "";
 
   carregarPessoas();
 
@@ -243,20 +243,18 @@ async function iniciarReconhecimento(){
             pessoa=>{
 
               const dist =
-                faceapi.euclideanDistance(
+                faceapi
+                .euclideanDistance(
                   faceAtual,
                   pessoa.face
                 );
 
-              // menor = melhor
-              if(
-                dist < 0.5
-              ){
+              if(dist < 0.5){
 
                 reconhecido = true;
 
                 registrarPonto(
-                  pessoa.nome
+                  pessoa
                 );
 
               }
@@ -288,17 +286,21 @@ async function iniciarReconhecimento(){
 // =========================
 // 🕒 REGISTRAR PONTO
 // =========================
-function registrarPonto(nome){
+function registrarPonto(pessoa){
 
   const agora =
     Date.now();
 
-  // delay anti spam
+  // delay
   if(
-    ultimoRegistro[nome]
+    ultimoRegistro[
+      pessoa.id
+    ]
     &&
     agora -
-    ultimoRegistro[nome]
+    ultimoRegistro[
+      pessoa.id
+    ]
     <
     delayRegistro
   ){
@@ -307,31 +309,48 @@ function registrarPonto(nome){
 
   }
 
-  ultimoRegistro[nome] =
-    agora;
+  ultimoRegistro[
+    pessoa.id
+  ] = agora;
+
+  const dataObj =
+    new Date();
 
   const horario =
-    new Date()
-    .toLocaleTimeString(
+    dataObj.toLocaleTimeString(
+      "pt-BR"
+    );
+
+  const data =
+    dataObj.toLocaleDateString(
       "pt-BR"
     );
 
   salvarRegistro({
-    nome,
-    horario
+
+    pessoaId:
+      pessoa.id,
+
+    nome:
+      pessoa.nome,
+
+    horario,
+
+    data
+
   });
 
   carregarRegistros();
 
   atualizarStatus(
-    `✅ ${nome} registrado às ${horario}`
+    `✅ ${pessoa.nome} registrado às ${horario}`
   );
 
 }
 
 
 // =========================
-// 📋 PESSOAS
+// 👥 CARREGAR PESSOAS
 // =========================
 function carregarPessoas(){
 
@@ -356,18 +375,58 @@ function carregarPessoas(){
             "item";
 
           div.innerHTML = `
-            <span>
-              👤 ${pessoa.nome}
-            </span>
 
-            <button
-              class="delete"
-              onclick="
-                deletarPessoa(${pessoa.id})
-              "
-            >
-              Excluir
-            </button>
+            <div class="item-info">
+
+              <strong>
+                👤 ${pessoa.nome}
+              </strong>
+
+              <small>
+                ID: ${pessoa.id}
+              </small>
+
+            </div>
+
+
+            <div class="item-actions">
+
+              <button
+                class="
+                  small-btn
+                  view-btn
+                "
+                onclick="
+                  abrirHistorico(
+                    ${pessoa.id},
+                    '${pessoa.nome}'
+                  )
+                "
+              >
+
+                Pontos
+
+              </button>
+
+
+              <button
+                class="
+                  small-btn
+                  delete-btn
+                "
+                onclick="
+                  deletarPessoa(
+                    ${pessoa.id}
+                  )
+                "
+              >
+
+                Excluir
+
+              </button>
+
+            </div>
+
           `;
 
           lista.appendChild(div);
@@ -382,7 +441,7 @@ function carregarPessoas(){
 
 
 // =========================
-// 🕒 REGISTROS
+// 🕒 CARREGAR REGISTROS
 // =========================
 function carregarRegistros(){
 
@@ -396,7 +455,9 @@ function carregarRegistros(){
 
       box.innerHTML = "";
 
-      registros.forEach(
+      registros
+      .slice(0,10)
+      .forEach(
         registro=>{
 
           const div =
@@ -407,13 +468,23 @@ function carregarRegistros(){
             "item";
 
           div.innerHTML = `
-            <span>
-              ✅ ${registro.nome}
-            </span>
+
+            <div class="item-info">
+
+              <strong>
+                ✅ ${registro.nome}
+              </strong>
+
+              <small>
+                ${registro.data}
+              </small>
+
+            </div>
 
             <strong>
               ${registro.horario}
             </strong>
+
           `;
 
           box.appendChild(div);
@@ -423,6 +494,105 @@ function carregarRegistros(){
 
     }
   );
+
+}
+
+
+// =========================
+// 📋 HISTÓRICO
+// =========================
+function abrirHistorico(
+  pessoaId,
+  nome
+){
+
+  document
+    .getElementById(
+      "modal"
+    )
+    .classList
+    .add("show");
+
+  document
+    .getElementById(
+      "modalNome"
+    )
+    .innerText =
+    `📋 ${nome}`;
+
+  listarRegistrosPessoa(
+    pessoaId,
+
+    registros=>{
+
+      const box =
+        document.getElementById(
+          "modalRegistros"
+        );
+
+      box.innerHTML = "";
+
+      if(
+        registros.length
+        ===
+        0
+      ){
+
+        box.innerHTML =
+          `
+            <p>
+              Nenhum registro
+            </p>
+          `;
+
+        return;
+
+      }
+
+      registros.forEach(
+        registro=>{
+
+          const div =
+            document
+            .createElement("div");
+
+          div.className =
+            "registro-item";
+
+          div.innerHTML = `
+
+            <span>
+              📅 ${registro.data}
+            </span>
+
+            <strong>
+              ${registro.horario}
+            </strong>
+
+          `;
+
+          box.appendChild(div);
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+// =========================
+// ❌ FECHAR MODAL
+// =========================
+function fecharModal(){
+
+  document
+    .getElementById(
+      "modal"
+    )
+    .classList
+    .remove("show");
 
 }
 

@@ -11,7 +11,7 @@ let db;
 const request =
   indexedDB.open(
     "FacePointDB",
-    1
+    2
   );
 
 
@@ -22,7 +22,10 @@ request.onupgradeneeded = e => {
 
   db = e.target.result;
 
-  // pessoas
+
+  // =====================
+  // 👤 PESSOAS
+  // =====================
   if(
     !db.objectStoreNames.contains(
       "pessoas"
@@ -39,7 +42,10 @@ request.onupgradeneeded = e => {
 
   }
 
-  // registros
+
+  // =====================
+  // 🕒 REGISTROS
+  // =====================
   if(
     !db.objectStoreNames.contains(
       "registros"
@@ -66,22 +72,17 @@ request.onsuccess = e => {
 
   db = e.target.result;
 
-  console.log("✅ DB carregado");
+  console.log(
+    "✅ Banco carregado"
+  );
 
+  // atualizar interface
   if(
     typeof carregarPessoas
     ===
     "function"
   ){
     carregarPessoas();
-  }
-
-  if(
-    typeof carregarRegistros
-    ===
-    "function"
-  ){
-    carregarRegistros();
   }
 
 };
@@ -134,7 +135,7 @@ function listarPessoas(callback){
       "pessoas"
     ).getAll();
 
-  req.onsuccess = () => {
+  req.onsuccess = ()=>{
 
     callback(req.result);
 
@@ -165,7 +166,7 @@ function deletarPessoa(id){
     "pessoas"
   ).delete(id);
 
-  tx.oncomplete = () => {
+  tx.oncomplete = ()=>{
 
     carregarPessoas();
 
@@ -208,12 +209,39 @@ function listarRegistros(callback){
       "registros"
     ).getAll();
 
-  req.onsuccess = () => {
+  req.onsuccess = ()=>{
 
     callback(
       req.result.reverse()
     );
 
   };
+
+}
+
+
+// =========================
+// 👤 REGISTROS POR PESSOA
+// =========================
+function listarRegistrosPessoa(
+  pessoaId,
+  callback
+){
+
+  listarRegistros(
+    registros=>{
+
+      const filtrados =
+        registros.filter(
+          r =>
+            r.pessoaId
+            ==
+            pessoaId
+        );
+
+      callback(filtrados);
+
+    }
+  );
 
 }

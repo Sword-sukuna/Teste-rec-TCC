@@ -52,7 +52,7 @@ body{
 
   width:100%;
 
-  max-width:500px;
+  max-width:520px;
 
   margin:auto;
 
@@ -82,9 +82,9 @@ header{
 
 .logo-circle{
 
-  width:65px;
+  width:70px;
 
-  height:65px;
+  height:70px;
 
   border-radius:50%;
 
@@ -94,7 +94,7 @@ header{
 
   justify-content:center;
 
-  font-size:30px;
+  font-size:32px;
 
   background:
     linear-gradient(
@@ -130,13 +130,13 @@ header{
 
   position:relative;
 
-  width:100%;
-
   border-radius:30px;
 
   overflow:hidden;
 
   margin-bottom:20px;
+
+  background:black;
 
   box-shadow:
     0 0 30px rgba(0,0,0,0.4);
@@ -149,19 +149,18 @@ video{
 
   display:block;
 
-  background:black;
-
 }
 
 
-/* overlay futurista */
+/* overlay */
 .camera-overlay{
 
   position:absolute;
 
   inset:0;
 
-  border:3px solid rgba(255,255,255,0.15);
+  border:
+    3px solid rgba(255,255,255,0.12);
 
   border-radius:30px;
 
@@ -210,11 +209,11 @@ video{
 
   margin-bottom:20px;
 
-  box-shadow:
-    0 0 25px rgba(0,0,0,0.25);
-
   border:
     1px solid rgba(255,255,255,0.05);
+
+  box-shadow:
+    0 0 25px rgba(0,0,0,0.25);
 
 }
 
@@ -222,7 +221,7 @@ video{
 
   margin-bottom:18px;
 
-  font-size:20px;
+  font-size:21px;
 
 }
 
@@ -258,11 +257,19 @@ input{
 /* ========================= */
 button{
 
+  border:none;
+
+  cursor:pointer;
+
+  transition:0.2s;
+
+}
+
+#btnCadastrar{
+
   width:100%;
 
   padding:15px;
-
-  border:none;
 
   border-radius:16px;
 
@@ -278,10 +285,6 @@ button{
   font-size:16px;
 
   font-weight:bold;
-
-  cursor:pointer;
-
-  transition:0.2s;
 
 }
 
@@ -320,6 +323,177 @@ button:active{
 
   display:flex;
 
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:10px;
+
+}
+
+
+/* ========================= */
+/* 🧠 INFOS */
+/* ========================= */
+.item-info{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:5px;
+
+}
+
+.item-info small{
+
+  opacity:0.7;
+
+}
+
+
+/* ========================= */
+/* 🔘 AÇÕES */
+/* ========================= */
+.item-actions{
+
+  display:flex;
+
+  gap:8px;
+
+}
+
+
+/* ========================= */
+/* 🔵 BOTÕES PEQUENOS */
+/* ========================= */
+.small-btn{
+
+  padding:10px 14px;
+
+  border-radius:12px;
+
+  color:white;
+
+  font-size:13px;
+
+  font-weight:bold;
+
+}
+
+.view-btn{
+
+  background:#2563eb;
+
+}
+
+.delete-btn{
+
+  background:#dc2626;
+
+}
+
+
+/* ========================= */
+/* 📋 MODAL */
+/* ========================= */
+.modal{
+
+  position:fixed;
+
+  inset:0;
+
+  background:
+    rgba(0,0,0,0.6);
+
+  display:none;
+
+  align-items:center;
+
+  justify-content:center;
+
+  padding:20px;
+
+  z-index:1000;
+
+}
+
+
+/* abrir modal */
+.modal.show{
+
+  display:flex;
+
+}
+
+
+/* conteúdo */
+.modal-content{
+
+  width:100%;
+
+  max-width:500px;
+
+  background:#111827;
+
+  border-radius:25px;
+
+  padding:20px;
+
+  max-height:80vh;
+
+  overflow:auto;
+
+}
+
+
+/* topo modal */
+.modal-header{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  margin-bottom:20px;
+
+}
+
+
+/* fechar */
+.close{
+
+  width:40px;
+
+  height:40px;
+
+  border-radius:12px;
+
+  background:#dc2626;
+
+  color:white;
+
+  font-size:18px;
+
+}
+
+
+/* ========================= */
+/* 🕒 REGISTRO ITEM */
+/* ========================= */
+.registro-item{
+
+  background:#1f2937;
+
+  padding:14px;
+
+  border-radius:16px;
+
+  margin-bottom:10px;
+
+  display:flex;
+
   justify-content:space-between;
 
   align-items:center;
@@ -328,29 +502,12 @@ button:active{
 
 
 /* ========================= */
-/* 🗑 BOTÃO EXCLUIR */
-/* ========================= */
-.delete{
-
-  width:auto;
-
-  padding:10px 14px;
-
-  border-radius:12px;
-
-  background:#dc2626;
-
-  font-size:13px;
-
-}
-
-
-/* ========================= */
-/* ✨ ANIMAÇÃO */
+/* ✨ ANIMAÇÕES */
 /* ========================= */
 .card,
-#status,
-.camera-box{
+.camera-box,
+.modal-content,
+#status{
 
   animation:fade 0.4s ease;
 

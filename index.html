@@ -36,7 +36,9 @@
 <div class="app">
 
 
-  <!-- HEADER -->
+  <!-- ===================== -->
+  <!-- 🧠 HEADER -->
+  <!-- ===================== -->
   <header>
 
     <div class="logo">
@@ -46,8 +48,13 @@
       </div>
 
       <div>
+
         <h1>FacePoint</h1>
-        <p>Ponto Facial Inteligente</p>
+
+        <p>
+          Sistema de Ponto Facial
+        </p>
+
       </div>
 
     </div>
@@ -56,7 +63,9 @@
 
 
 
-  <!-- CAMERA -->
+  <!-- ===================== -->
+  <!-- 📷 CAMERA -->
+  <!-- ===================== -->
   <section class="camera-box">
 
     <video
@@ -72,21 +81,29 @@
 
 
 
-  <!-- STATUS -->
+  <!-- ===================== -->
+  <!-- 📡 STATUS -->
+  <!-- ===================== -->
   <section class="status-box">
 
     <div id="status">
+
       🔎 Aguardando reconhecimento...
+
     </div>
 
   </section>
 
 
 
-  <!-- CADASTRO -->
+  <!-- ===================== -->
+  <!-- 👤 CADASTRO -->
+  <!-- ===================== -->
   <section class="card">
 
-    <h2>👤 Cadastrar Pessoa</h2>
+    <h2>
+      👤 Cadastro Facial
+    </h2>
 
     <input
       type="text"
@@ -95,33 +112,80 @@
     />
 
     <button id="btnCadastrar">
-      Cadastrar Rosto
+
+      Cadastrar Pessoa
+
     </button>
 
   </section>
 
 
 
-  <!-- REGISTROS -->
+  <!-- ===================== -->
+  <!-- 👥 PESSOAS -->
+  <!-- ===================== -->
   <section class="card">
 
-    <h2>🕒 Registros de Ponto</h2>
+    <h2>
+      👥 Pessoas Cadastradas
+    </h2>
+
+    <div id="lista"></div>
+
+  </section>
+
+
+
+  <!-- ===================== -->
+  <!-- 🕒 REGISTROS -->
+  <!-- ===================== -->
+  <section class="card">
+
+    <h2>
+      🕒 Últimos Registros
+    </h2>
 
     <div id="registros"></div>
 
   </section>
 
 
+</div>
 
-  <!-- PESSOAS -->
-  <section class="card">
 
-    <h2>📋 Pessoas Cadastradas</h2>
 
-    <div id="lista"></div>
+<!-- ========================= -->
+<!-- 📋 MODAL -->
+<!-- ========================= -->
+<div
+  id="modal"
+  class="modal"
+>
 
-  </section>
+  <div class="modal-content">
 
+    <div class="modal-header">
+
+      <h2 id="modalNome">
+
+        Histórico
+
+      </h2>
+
+      <button
+        class="close"
+        onclick="fecharModal()"
+      >
+
+        ✕
+
+      </button>
+
+    </div>
+
+    <div id="modalRegistros"></div>
+
+  </div>
 
 </div>
 
