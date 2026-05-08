@@ -911,8 +911,9 @@ button:active{
 }
 
 
+
 /* ========================= */
-/* 🔐 LOGIN */
+/* 🔐 LOGIN PAGE */
 /* ========================= */
 .login-page{
 
@@ -929,6 +930,9 @@ button:active{
 }
 
 
+/* ========================= */
+/* 🔐 LOGIN CARD */
+/* ========================= */
 .login-card{
 
   width:100%;
@@ -938,7 +942,7 @@ button:active{
   background:
     rgba(15,23,42,0.92);
 
-  backdrop-filter:blur(14px);
+  backdrop-filter:blur(18px);
 
   border:
     1px solid rgba(255,255,255,0.08);
@@ -948,43 +952,13 @@ button:active{
   padding:35px 25px;
 
   box-shadow:
-
-    0 0 40px
-    rgba(0,0,0,0.45);
-
-  animation:
-    loginShow 0.5s ease;
-
-}
-
-
-@keyframes loginShow{
-
-  from{
-
-    opacity:0;
-
-    transform:
-      translateY(20px)
-      scale(0.98);
-
-  }
-
-  to{
-
-    opacity:1;
-
-    transform:
-      translateY(0)
-      scale(1);
-
-  }
+    0 10px 40px rgba(0,0,0,0.45);
 
 }
 
 
 /* ========================= */
-/* 🧠 LOGO */
+/* 🧠 LOGIN LOGO */
 /* ========================= */
 .login-logo{
 
@@ -1012,29 +986,77 @@ button:active{
 
 
 /* ========================= */
-/* 📦 INPUT */
+/* 📦 LOGIN INPUT */
 /* ========================= */
 .login-card input{
 
   width:100%;
 
+  border:none;
+
+  outline:none;
+
   margin-bottom:16px;
+
+  padding:16px;
+
+  border-radius:18px;
+
+  background:#111827;
+
+  color:white;
+
+  font-size:15px;
 
 }
 
 
 /* ========================= */
-/* 🔘 BOTÕES */
+/* 🔘 LOGIN BUTTONS */
 /* ========================= */
 .login-card button{
 
   width:100%;
 
+  border:none;
+
+  padding:16px;
+
+  border-radius:18px;
+
+  color:white;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
   margin-top:10px;
+
+  transition:0.25s;
+
+}
+
+.login-card button:hover{
+
+  transform:translateY(-2px);
 
 }
 
 
+/* admin */
+.login-card button:first-of-type{
+
+  background:
+    linear-gradient(
+      135deg,
+      #2563eb,
+      #7c3aed
+    );
+
+}
+
+
+/* monitor */
 .monitor-btn{
 
   background:
@@ -1048,14 +1070,14 @@ button:active{
 
 
 /* ========================= */
-/* ❌ ERRO */
+/* ❌ LOGIN ERRO */
 /* ========================= */
 #erroLogin{
-
-  color:#f87171;
 
   margin-top:15px;
 
   text-align:center;
+
+  color:#f87171;
 
 }
