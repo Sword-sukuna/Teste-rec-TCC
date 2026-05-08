@@ -39,26 +39,53 @@ window.addEventListener(
 
   async ()=>{
 
-    // =====================
-    // 🔐 ADMIN / MONITOR
-    // =====================
-    if(
-      modoSistema
-      ===
-      "monitor"
-    ){
+    
+// =====================
+// 🔐 ADMIN / MONITOR
+// =====================
+if(
+  modoSistema
+  ===
+  "monitor"
+){
 
-      trocarModo(
-        "monitor"
-      );
+  // abrir monitor
+  trocarModo(
+    "monitor"
+  );
 
-    }else{
+  // esconder admin
+  const admin =
+    document.getElementById(
+      "adminArea"
+    );
 
-      trocarModo(
-        "admin"
-      );
+  if(admin){
 
-    }
+    admin.remove();
+
+  }
+
+  // esconder tabs
+  const tabs =
+    document.querySelector(
+      ".tabs"
+    );
+
+  if(tabs){
+
+    tabs.style.display =
+      "none";
+
+  }
+
+}else{
+
+  trocarModo(
+    "admin"
+  );
+
+}
 
 
     // =====================
