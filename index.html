@@ -1,53 +1,170 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
 <title>FacePresence</title>
-<link rel="stylesheet" href="./style.css">
+
+<link
+  rel="stylesheet"
+  href="./style.css"
+>
+
+<!-- evita favicon 404 -->
+<link rel="icon" href="data:,">
+
 </head>
+
 <body>
 
+
+<!-- ========================= -->
+<!-- 📚 SIDEBAR -->
+<!-- ========================= -->
 <aside>
+
 <h1>🎓 FacePresence</h1>
-<button onclick="sec('dash')">Dashboard</button>
-<button onclick="sec('cad')">Cadastro</button>
-<button onclick="sec('cam')">Camera</button>
+
+<button onclick="sec('dash')">
+Dashboard
+</button>
+
+<button onclick="sec('cad')">
+Cadastro
+</button>
+
+<button onclick="sec('cam')">
+Camera
+</button>
+
 </aside>
 
+
+
+<!-- ========================= -->
+<!-- 📄 CONTEÚDO -->
+<!-- ========================= -->
 <main>
 
+
+<!-- ========================= -->
+<!-- 📊 DASHBOARD -->
+<!-- ========================= -->
 <section id="dash" class="on">
+
 <h2>Dashboard</h2>
+
 <div class="cards">
-<div class="card"><h3 id="ta">0</h3><p>Alunos</p></div>
+
+<div class="card">
+
+<h3 id="ta">0</h3>
+
+<p>Alunos</p>
+
 </div>
+
+</div>
+
 </section>
 
+
+
+<!-- ========================= -->
+<!-- 👨‍🎓 CADASTRO -->
+<!-- ========================= -->
 <section id="cad">
-<h2>Cadastro</h2>
-<input id="nome" placeholder="Nome">
-<button id="cap">Capturar Face</button>
-<button id="save">Salvar</button>
-<input id="busca" placeholder="Buscar">
-<video id="video" autoplay playsinline muted></video>
+
+<h2>Cadastro Facial</h2>
+
+<input
+  id="nome"
+  placeholder="Nome do aluno"
+>
+
+<div class="botoes">
+
+<button id="cap">
+Capturar Face
+</button>
+
+<button id="save">
+Salvar
+</button>
+
+</div>
+
+<input
+  id="busca"
+  placeholder="Buscar aluno"
+>
+
+<!-- preview -->
+<video
+  id="video"
+  autoplay
+  playsinline
+  muted
+></video>
+
 <div id="lista"></div>
+
 </section>
 
+
+
+<!-- ========================= -->
+<!-- 📷 CAMERA MOBILE -->
+<!-- ========================= -->
 <section id="cam">
+
 <h2>Camera Mobile</h2>
-<button onclick="gerarQRCodeCamera()">Gerar QR</button>
+
+<button onclick="gerarQRCodeCamera()">
+Gerar QR
+</button>
+
 <div id="qrcode"></div>
-<textarea id="answer"></textarea>
-<button onclick="receberAnswer()">Conectar</button>
+
+<h3>Answer</h3>
+
+<textarea
+  id="answer"
+  placeholder="Cole o answer aqui"
+></textarea>
+
+<button onclick="receberAnswer()">
+Conectar Camera
+</button>
+
 </section>
+
 
 </main>
 
+
+
+<!-- ========================= -->
+<!-- 📦 SCRIPTS -->
+<!-- ========================= -->
+
 <script src="./qrcode.min.js"></script>
+
 <script src="./face-api.min.js"></script>
+
 <script src="./db.js"></script>
+
 <script src="./rtc.js"></script>
+
 <script src="./script.js"></script>
+
+
 </body>
 </html>

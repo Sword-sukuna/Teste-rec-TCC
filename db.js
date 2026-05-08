@@ -1,29 +1,158 @@
+
+// =============================
+// 💾 DATABASE
+// =============================
 let db;
-const req=indexedDB.open("FaceDB",1);
 
-req.onupgradeneeded=e=>{
- db=e.target.result;
- db.createObjectStore("alunos",{keyPath:"id",autoIncrement:true});
+
+// =============================
+// 🚀 ABRIR DATABASE
+// =============================
+const req =
+  indexedDB.open("FaceDB", 1);
+
+
+// =============================
+// 🛠 CRIAR TABELAS
+// =============================
+req.onupgradeneeded = e => {
+
+  db = e.target.result;
+
+  // alunos
+  if(
+    !db.objectStoreNames.contains("alunos")
+  ){
+
+    db.createObjectStore(
+      "alunos",
+      {
+        keyPath:"id",
+        autoIncrement:true
+      }
+    );
+
+  }
+
 };
 
-req.onsuccess=e=>{
- db=e.target.result;
- carregarAlunos();
+
+// =============================
+// ✅ DB OK
+// =============================
+req.onsuccess = e => {
+
+  db = e.target.result;
+
+  console.log("✅ Banco carregado");
+
+  // evita erro caso função ainda não exista
+  if(
+    typeof carregarAlunos === "function"
+  ){
+    carregarAlunos();
+  }
+
 };
 
-function salvarAluno(a){
- db.transaction("alunos","readwrite")
- .objectStore("alunos").add(a);
+
+// =============================
+// ❌ ERRO DB
+// =============================
+req.onerror = e => {
+
+  console.error(
+    "Erro IndexedDB:",
+    e
+  );
+
+};
+
+
+// =============================
+// 💾 SALVAR ALUNO
+// =============================
+function salvarAluno(aluno){
+
+  if(!db){
+
+    alert("Banco não carregado");
+
+    return;
+
+  }
+
+  const tx =
+    db.transaction(
+      "alunos",
+      "readwrite"
+    );
+
+  tx.objectStore("alunos")
+    .add(aluno);
+
+  tx.oncomplete = ()=>{
+
+    console.log("Aluno salvo");
+
+  };
+
 }
 
-function listarAlunos(cb){
- const r=db.transaction("alunos","readonly")
- .objectStore("alunos").getAll();
- r.onsuccess=()=>cb(r.result);
+
+// =============================
+// 📋 LISTAR
+// =============================
+function listarAlunos(callback){
+
+  if(!db) return;
+
+  const tx =
+    db.transaction(
+      "alunos",
+      "readonly"
+    );
+
+  const req =
+    tx.objectStore("alunos")
+    .getAll();
+
+  req.onsuccess = ()=>{
+
+    callback(req.result);
+
+  };
+
 }
 
+
+// =============================
+// 🗑 EXCLUIR
+// =============================
 function deletarAluno(id){
- db.transaction("alunos","readwrite")
- .objectStore("alunos").delete(id);
- carregarAlunos();
+
+  if(!db) return;
+
+  const ok =
+    confirm(
+      "Excluir aluno?"
+    );
+
+  if(!ok) return;
+
+  const tx =
+    db.transaction(
+      "alunos",
+      "readwrite"
+    );
+
+  tx.objectStore("alunos")
+    .delete(id);
+
+  tx.oncomplete = ()=>{
+
+    carregarAlunos();
+
+  };
+
 }
