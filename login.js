@@ -38,7 +38,7 @@ function loginAdmin(){
 
     // entrar
     location.href =
-      "./index.html";
+  "./dashboard.html";
 
   }else{
 
@@ -61,6 +61,6 @@ function entrarMonitor(){
   );
 
   location.href =
-    "./index.html";
+  "./dashboard.html";
 
 }
