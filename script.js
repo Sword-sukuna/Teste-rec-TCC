@@ -467,6 +467,38 @@ function registrarPonto(pessoa){
       carregarMonitor();
 
 
+// 🔊 som
+tocarSom();
+
+// 🗣 voz
+falar(
+
+  `${pessoa.nome}
+   registrou
+   ${tipo}`
+
+);
+
+
+// efeito visual
+document
+  .body
+  .classList
+  .add(
+    "face-detected"
+  );
+
+setTimeout(()=>{
+
+  document
+    .body
+    .classList
+    .remove(
+      "face-detected"
+    );
+
+},1500);
+
       atualizarStatus(
 
         `✅ ${pessoa.nome}
@@ -730,19 +762,30 @@ function fecharModal(){
 }
 
 
+
 // =========================
 // 📡 STATUS
 // =========================
-function atualizarStatus(texto){
+function atualizarStatus(
+  texto
+){
 
-  document
-    .getElementById(
+  const box =
+    document.getElementById(
       "status"
-    )
-    .innerText = texto;
+    );
+
+  if(box){
+
+    box.innerText = texto;
+
+  }
+
+  atualizarMonitorStatus(
+    texto
+  );
 
 }
-
 
 // =========================
 // 🔀 TROCAR MODO
@@ -1010,5 +1053,205 @@ function excluirRegistroHistorico(
     carregarMonitor();
 
   },300);
+
+}
+
+
+// =========================
+// 🕒 RELÓGIO
+// =========================
+function atualizarRelogio(){
+
+  const agora =
+    new Date();
+
+  const hora =
+    agora.toLocaleTimeString(
+      "pt-BR"
+    );
+
+  const data =
+    agora.toLocaleDateString(
+      "pt-BR"
+    );
+
+  const h =
+    document.getElementById(
+      "clockHora"
+    );
+
+  const d =
+    document.getElementById(
+      "clockData"
+    );
+
+  if(h) h.innerText = hora;
+
+  if(d) d.innerText = data;
+
+}
+
+
+// atualizar relógio
+setInterval(
+
+  atualizarRelogio,
+
+  1000
+
+);
+
+
+// iniciar
+atualizarRelogio();
+
+
+
+
+// =========================
+// 👀 MONITOR STATUS
+// =========================
+function atualizarMonitorStatus(
+  texto
+){
+
+  const box =
+    document.getElementById(
+      "monitorStatus"
+    );
+
+  if(!box) return;
+
+  box.innerText = texto;
+
+}
+
+
+
+
+// =========================
+// 👀 MONITOR MELHORADO
+// =========================
+function carregarMonitor(){
+
+  listarRegistros(
+
+    registros=>{
+
+      const box =
+        document.getElementById(
+          "monitorRegistros"
+        );
+
+      if(!box) return;
+
+      box.innerHTML = "";
+
+      registros
+      .slice(0,15)
+      .forEach(
+
+        registro=>{
+
+          const div =
+            document
+            .createElement("div");
+
+          div.className =
+            "item live-registro";
+
+          div.innerHTML = `
+
+            <div class="item-info">
+
+              <strong>
+
+                👤 ${registro.nome}
+
+              </strong>
+
+              <small>
+
+                📅 ${registro.data}
+
+              </small>
+
+            </div>
+
+
+            <div>
+
+              <strong>
+
+                ${registro.horario}
+
+              </strong>
+
+              <p>
+
+                ${registro.tipo || "Entrada"}
+
+              </p>
+
+            </div>
+
+          `;
+
+          box.appendChild(div);
+
+        }
+
+      );
+
+    }
+
+  );
+
+}
+
+
+// =========================
+// 🔊 SOM
+// =========================
+function tocarSom(){
+
+  const audio =
+    new Audio(
+
+      "data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU"
+
+    );
+
+  audio.volume = 0.5;
+
+  audio.play().catch(()=>{});
+
+}
+
+// =========================
+// 🗣 VOZ
+// =========================
+function falar(texto){
+
+  if(
+    !("speechSynthesis" in window)
+  ) return;
+
+  const voz =
+    new SpeechSynthesisUtterance(
+      texto
+    );
+
+  voz.lang = "pt-BR";
+
+  voz.rate = 1;
+
+  voz.pitch = 1;
+
+  speechSynthesis.cancel();
+
+  speechSynthesis.speak(
+    voz
+  );
 
 }
