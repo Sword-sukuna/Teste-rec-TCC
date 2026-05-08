@@ -1,41 +1,83 @@
+let faceCapturada = null;
+  if(!deteccao){
+    alert("Nenhum rosto detectado");
+    return;
+  }
 
-// DOM helper
-function $(id) {
-  return document.getElementById(id);
+  faceCapturada = Array.from(deteccao.descriptor);
+
+  alert("Face capturada");
+
 }
 
 
-// =============================
-// INIT
-// =============================
-document.addEventListener("DOMContentLoaded", () => {
+function salvarCadastro(){
 
-  const btn = $("cadastrar");
+  const nome = document.getElementById("nome").value;
 
-  if (btn) {
-    btn.addEventListener("click", cadastrar);
+  if(!nome || !faceCapturada){
+    alert("Complete os dados");
+    return;
   }
 
-});
+  salvarAluno({
+    nome,
+    face:faceCapturada
+  });
+
+  carregarAlunos();
+
+}
 
 
-// =============================
-// CADASTRAR
-// =============================
-function cadastrar() {
+function carregarAlunos(){
 
-  const nome = $("nome");
-  const lista = $("lista");
+  listarAlunos((alunos)=>{
 
-  if (!nome || !lista) return;
+    const lista = document.getElementById("lista");
 
-  if (!nome.value.trim()) return;
+    lista.innerHTML = "";
 
-  const div = document.createElement("div");
-  div.innerText = nome.value;
+    document.getElementById("totalAlunos").innerText = alunos.length;
 
-  lista.appendChild(div);
+    alunos.forEach(aluno=>{
 
-  nome.value = "";
+      const div = document.createElement("div");
+
+      div.className = "aluno";
+
+      div.innerHTML = `
+        <span>${aluno.nome}</span>
+
+        <button onclick="deletarAluno(${aluno.id})">
+          Excluir
+        </button>
+      `;
+
+      lista.appendChild(div);
+
+    });
+
+  });
+
+}
+
+
+function filtrarAlunos(e){
+
+  const termo = e.target.value.toLowerCase();
+
+  const alunos = document.querySelectorAll(".aluno");
+
+  alunos.forEach(aluno=>{
+
+    const texto = aluno.innerText.toLowerCase();
+
+    aluno.style.display =
+      texto.includes(termo)
+      ? "flex"
+      : "none";
+
+  });
 
 }
