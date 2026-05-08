@@ -1,3 +1,21 @@
+
+// =========================
+// 🔐 MODO
+// =========================
+const modoSistema =
+  localStorage.getItem(
+    "modo"
+  );
+
+
+// sem login
+if(!modoSistema){
+
+  location.href =
+    "./login.html";
+
+}
+
 // =========================
 // 🧠 FACEPOINT
 // =========================
@@ -11,35 +29,89 @@ const delayRegistro = 10000;
 let ultimoRegistro = {};
 
 
+
 // =========================
 // 🚀 INICIAR
 // =========================
 window.addEventListener(
+
   "DOMContentLoaded",
+
   async ()=>{
 
+    // =====================
+    // 🔐 ADMIN / MONITOR
+    // =====================
+    if(
+      modoSistema
+      ===
+      "monitor"
+    ){
+
+      trocarModo(
+        "monitor"
+      );
+
+    }else{
+
+      trocarModo(
+        "admin"
+      );
+
+    }
+
+
+    // =====================
+    // 📷 CAMERA
+    // =====================
     await iniciarCamera();
 
+
+    // =====================
+    // 🧠 IA
+    // =====================
     await carregarModelos();
 
+
+    // =====================
+    // 📋 DADOS
+    // =====================
     carregarPessoas();
 
     carregarRegistros();
 
-    document
-      .getElementById(
-        "btnCadastrar"
-      )
-      .addEventListener(
-        "click",
-        cadastrarPessoa
-      );
+    carregarMonitor();
 
+
+    // =====================
+    // 👨‍💼 ADMIN
+    // =====================
+    if(
+      modoSistema
+      ===
+      "admin"
+    ){
+
+      document
+        .getElementById(
+          "btnCadastrar"
+        )
+        .addEventListener(
+          "click",
+          cadastrarPessoa
+        );
+
+    }
+
+
+    // =====================
+    // 🔎 RECONHECIMENTO
+    // =====================
     iniciarReconhecimento();
 
   }
-);
 
+);
 
 // =========================
 // 📷 CAMERA

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+/>
+
+<title>FacePoint</title>
+
+<link
+  rel="stylesheet"
+  href="./style.css"
+/>
+
+<link rel="icon" href="data:,">
+
+</head>
+
+<body>
+
+
+<!-- ========================= -->
+<!-- 🌌 BG -->
+<!-- ========================= -->
+<div class="bg"></div>
+
+
+<!-- ========================= -->
+<!-- 📱 APP -->
+<!-- ========================= -->
+<div class="app">
+
+
+  <!-- ===================== -->
+  <!-- 🧠 HEADER -->
+  <!-- ===================== -->
+  <header>
+
+    <div class="logo">
+
+      <div class="logo-circle">
+        👁
+      </div>
+
+      <div>
+
+        <h1>FacePoint</h1>
+
+        <p>
+          Sistema de Ponto Facial
+        </p>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+
+  <!-- ===================== -->
+  <!-- 🔀 MODOS -->
+  <!-- ===================== -->
+  <section class="card">
+
+    <div class="tabs">
+
+      <button
+        class="tab active"
+        onclick="trocarModo('admin')"
+      >
+
+        👨‍💼 Admin
+
+      </button>
+
+      <button
+        class="tab"
+        onclick="trocarModo('monitor')"
+      >
+
+        👀 Monitor
+
+      </button>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- ===================== -->
+  <!-- 📷 CAMERA -->
+  <!-- ===================== -->
+  <section class="camera-box">
+
+    <video
+      id="video"
+      autoplay
+      playsinline
+      muted
+    ></video>
+
+    <div class="camera-overlay"></div>
+
+  </section>
+
+
+
+  <!-- ===================== -->
+  <!-- 📡 STATUS -->
+  <!-- ===================== -->
+  <section class="status-box">
+
+    <div id="status">
+
+      🔎 Aguardando reconhecimento...
+
+    </div>
+
+  </section>
+
+
+
+  <!-- ===================== -->
+  <!-- 👨‍💼 ADMIN -->
+  <!-- ===================== -->
+  <div id="adminArea">
+
+
+    <!-- cadastro -->
+    <section class="card">
+
+      <h2>
+        👤 Cadastro Facial
+      </h2>
+
+      <input
+        type="text"
+        id="nome"
+        placeholder="Nome da pessoa"
+      />
+
+      <button id="btnCadastrar">
+
+        Cadastrar Pessoa
+
+      </button>
+
+    </section>
+
+
+
+    <!-- pessoas -->
+    <section class="card">
+
+      <div class="top-card">
+
+        <h2>
+          👥 Pessoas
+        </h2>
+
+        <button
+          class="
+            small-btn
+            delete-btn
+          "
+          onclick="resetarPessoas()"
+        >
+
+          Resetar Pessoas
+
+        </button>
+
+      </div>
+
+      <div id="lista"></div>
+
+    </section>
+
+
+
+    <!-- registros -->
+    <section class="card">
+
+      <div class="top-card">
+
+        <h2>
+          🕒 Registros
+        </h2>
+
+        <button
+          class="
+            small-btn
+            delete-btn
+          "
+          onclick="resetarRegistros()"
+        >
+
+          Resetar Registros
+
+        </button>
+
+      </div>
+
+      <div id="registros"></div>
+
+    </section>
+
+  </div>
+
+
+
+  
+<!-- ===================== -->
+<!-- 👀 MONITOR -->
+<!-- ===================== -->
+<div
+  id="monitorArea"
+  style="display:none"
+>
+
+
+  <!-- relógio -->
+  <section class="card monitor-clock">
+
+    <h2 id="clockHora">
+
+      00:00:00
+
+    </h2>
+
+    <p id="clockData">
+
+      00/00/0000
+
+    </p>
+
+  </section>
+
+
+
+  <!-- status -->
+  <section class="card monitor-status">
+
+    <h2>
+      📡 Status
+    </h2>
+
+    <div id="monitorStatus">
+
+      🔎 Aguardando reconhecimento...
+
+    </div>
+
+  </section>
+
+
+
+  <!-- registros -->
+  <section class="card">
+
+    <h2>
+      👀 Registros Ao Vivo
+    </h2>
+
+    <div id="monitorRegistros"></div>
+
+  </section>
+
+</div>
+
+
+
+<!-- ========================= -->
+<!-- 📋 MODAL -->
+<!-- ========================= -->
+<div
+  id="modal"
+  class="modal"
+>
+
+  <div class="modal-content">
+
+    <div class="modal-header">
+
+      <h2 id="modalNome">
+
+        Histórico
+
+      </h2>
+
+      <button
+        class="close"
+        onclick="fecharModal()"
+      >
+
+        ✕
+
+      </button>
+
+    </div>
+
+    <div id="modalRegistros"></div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ========================= -->
+<!-- 📦 SCRIPTS -->
+<!-- ========================= -->
+
+<script src="./face-api.min.js"></script>
+
+<script src="./db.js"></script>
+
+<script src="./script.js"></script>
+
+</body>
+</html>
