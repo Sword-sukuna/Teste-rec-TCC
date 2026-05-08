@@ -609,3 +609,273 @@ function atualizarStatus(texto){
     .innerText = texto;
 
 }
+
+
+// =========================
+// 🔀 TROCAR MODO
+// =========================
+function trocarModo(modo){
+
+  // tabs
+  document
+    .querySelectorAll(".tab")
+    .forEach(
+      t=>t.classList.remove(
+        "active"
+      )
+    );
+
+  // ativa tab correta
+  if(modo==="admin"){
+
+    document
+      .querySelectorAll(".tab")[0]
+      .classList
+      .add("active");
+
+  }else{
+
+    document
+      .querySelectorAll(".tab")[1]
+      .classList
+      .add("active");
+
+  }
+
+  // áreas
+  document
+    .getElementById(
+      "adminArea"
+    )
+    .style.display =
+    modo==="admin"
+    ? "block"
+    : "none";
+
+  document
+    .getElementById(
+      "monitorArea"
+    )
+    .style.display =
+    modo==="monitor"
+    ? "block"
+    : "none";
+
+}
+
+
+// =========================
+// 👀 MONITOR TEMPO REAL
+// =========================
+function carregarMonitor(){
+
+  listarRegistros(
+    registros=>{
+
+      const box =
+        document.getElementById(
+          "monitorRegistros"
+        );
+
+      if(!box) return;
+
+      box.innerHTML = "";
+
+      registros
+      .slice(0,20)
+      .forEach(
+        registro=>{
+
+          const div =
+            document
+            .createElement("div");
+
+          div.className =
+            "item";
+
+          div.innerHTML = `
+
+            <div class="item-info">
+
+              <strong>
+                👤 ${registro.nome}
+              </strong>
+
+              <small>
+                📅 ${registro.data}
+              </small>
+
+            </div>
+
+            <strong>
+              ${registro.horario}
+            </strong>
+
+          `;
+
+          box.appendChild(div);
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+// =========================
+// 🔄 AUTO UPDATE
+// =========================
+setInterval(()=>{
+
+  carregarMonitor();
+
+},2000);
+
+
+
+
+// =========================
+// 📋 HISTÓRICO MELHORADO
+// =========================
+function abrirHistorico(
+  pessoaId,
+  nome
+){
+
+  document
+    .getElementById(
+      "modal"
+    )
+    .classList
+    .add("show");
+
+  document
+    .getElementById(
+      "modalNome"
+    )
+    .innerText =
+    `📋 ${nome}`;
+
+  listarRegistrosPessoa(
+
+    pessoaId,
+
+    registros=>{
+
+      const box =
+        document
+        .getElementById(
+          "modalRegistros"
+        );
+
+      box.innerHTML = "";
+
+      if(
+        registros.length
+        ===
+        0
+      ){
+
+        box.innerHTML =
+        `
+          <p>
+            Nenhum registro
+          </p>
+        `;
+
+        return;
+
+      }
+
+      registros.forEach(
+        registro=>{
+
+          const div =
+            document
+            .createElement("div");
+
+          div.className =
+            "registro-item";
+
+          div.innerHTML = `
+
+            <div>
+
+              <strong>
+                📅 ${registro.data}
+              </strong>
+
+              <p>
+                ${registro.horario}
+              </p>
+
+            </div>
+
+
+            <button
+
+              class="
+                small-btn
+                delete-btn
+              "
+
+              onclick="
+                excluirRegistroHistorico(
+                  ${registro.id},
+                  ${pessoaId},
+                  '${nome}'
+                )
+              "
+
+            >
+
+              Excluir
+
+            </button>
+
+          `;
+
+          box.appendChild(div);
+
+        }
+      );
+
+    }
+
+  );
+
+}
+
+
+
+// =========================
+// 🗑 EXCLUIR HISTÓRICO
+// =========================
+function excluirRegistroHistorico(
+
+  registroId,
+  pessoaId,
+  nome
+
+){
+
+  deletarRegistro(
+    registroId
+  );
+
+  setTimeout(()=>{
+
+    abrirHistorico(
+      pessoaId,
+      nome
+    );
+
+    carregarRegistros();
+
+    carregarMonitor();
+
+  },300);
+
+}

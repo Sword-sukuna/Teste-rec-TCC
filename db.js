@@ -11,21 +11,19 @@ let db;
 const request =
   indexedDB.open(
     "FacePointDB",
-    2
+    3
   );
 
 
 // =========================
-// 🛠 CRIAR TABELAS
+// 🛠 CRIAR DB
 // =========================
 request.onupgradeneeded = e => {
 
   db = e.target.result;
 
 
-  // =====================
-  // 👤 PESSOAS
-  // =====================
+  // pessoas
   if(
     !db.objectStoreNames.contains(
       "pessoas"
@@ -43,9 +41,7 @@ request.onupgradeneeded = e => {
   }
 
 
-  // =====================
-  // 🕒 REGISTROS
-  // =====================
+  // registros
   if(
     !db.objectStoreNames.contains(
       "registros"
@@ -73,10 +69,9 @@ request.onsuccess = e => {
   db = e.target.result;
 
   console.log(
-    "✅ Banco carregado"
+    "✅ DB carregado"
   );
 
-  // atualizar interface
   if(
     typeof carregarPessoas
     ===
@@ -176,6 +171,41 @@ function deletarPessoa(id){
 
 
 // =========================
+// 🧹 RESETAR PESSOAS
+// =========================
+function resetarPessoas(){
+
+  const ok =
+    confirm(
+      "APAGAR TODAS AS PESSOAS?"
+    );
+
+  if(!ok) return;
+
+  const tx =
+    db.transaction(
+      "pessoas",
+      "readwrite"
+    );
+
+  tx.objectStore(
+    "pessoas"
+  ).clear();
+
+  tx.oncomplete = ()=>{
+
+    carregarPessoas();
+
+    alert(
+      "Pessoas apagadas"
+    );
+
+  };
+
+}
+
+
+// =========================
 // 🕒 SALVAR REGISTRO
 // =========================
 function salvarRegistro(registro){
@@ -243,5 +273,71 @@ function listarRegistrosPessoa(
 
     }
   );
+
+}
+
+
+// =========================
+// 🗑 EXCLUIR REGISTRO
+// =========================
+function deletarRegistro(id){
+
+  const ok =
+    confirm(
+      "Excluir registro?"
+    );
+
+  if(!ok) return;
+
+  const tx =
+    db.transaction(
+      "registros",
+      "readwrite"
+    );
+
+  tx.objectStore(
+    "registros"
+  ).delete(id);
+
+}
+
+
+// =========================
+// 🧹 RESETAR REGISTROS
+// =========================
+function resetarRegistros(){
+
+  const ok =
+    confirm(
+      "APAGAR TODOS OS REGISTROS?"
+    );
+
+  if(!ok) return;
+
+  const tx =
+    db.transaction(
+      "registros",
+      "readwrite"
+    );
+
+  tx.objectStore(
+    "registros"
+  ).clear();
+
+  tx.oncomplete = ()=>{
+
+    if(
+      typeof carregarRegistros
+      ===
+      "function"
+    ){
+      carregarRegistros();
+    }
+
+    alert(
+      "Registros apagados"
+    );
+
+  };
 
 }

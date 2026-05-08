@@ -10,7 +10,7 @@
   content="width=device-width,initial-scale=1.0"
 />
 
-<title>FacePoint Mobile</title>
+<title>FacePoint</title>
 
 <link
   rel="stylesheet"
@@ -25,7 +25,7 @@
 
 
 <!-- ========================= -->
-<!-- 🌌 BACKGROUND -->
+<!-- 🌌 BG -->
 <!-- ========================= -->
 <div class="bg"></div>
 
@@ -64,6 +64,37 @@
 
 
   <!-- ===================== -->
+  <!-- 🔀 MODOS -->
+  <!-- ===================== -->
+  <section class="card">
+
+    <div class="tabs">
+
+      <button
+        class="tab active"
+        onclick="trocarModo('admin')"
+      >
+
+        👨‍💼 Admin
+
+      </button>
+
+      <button
+        class="tab"
+        onclick="trocarModo('monitor')"
+      >
+
+        👀 Monitor
+
+      </button>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- ===================== -->
   <!-- 📷 CAMERA -->
   <!-- ===================== -->
   <section class="camera-box">
@@ -97,57 +128,113 @@
 
 
   <!-- ===================== -->
-  <!-- 👤 CADASTRO -->
+  <!-- 👨‍💼 ADMIN -->
   <!-- ===================== -->
-  <section class="card">
+  <div id="adminArea">
 
-    <h2>
-      👤 Cadastro Facial
-    </h2>
 
-    <input
-      type="text"
-      id="nome"
-      placeholder="Nome da pessoa"
-    />
+    <!-- cadastro -->
+    <section class="card">
 
-    <button id="btnCadastrar">
+      <h2>
+        👤 Cadastro Facial
+      </h2>
 
-      Cadastrar Pessoa
+      <input
+        type="text"
+        id="nome"
+        placeholder="Nome da pessoa"
+      />
 
-    </button>
+      <button id="btnCadastrar">
 
-  </section>
+        Cadastrar Pessoa
+
+      </button>
+
+    </section>
+
+
+
+    <!-- pessoas -->
+    <section class="card">
+
+      <div class="top-card">
+
+        <h2>
+          👥 Pessoas
+        </h2>
+
+        <button
+          class="
+            small-btn
+            delete-btn
+          "
+          onclick="resetarPessoas()"
+        >
+
+          Resetar Pessoas
+
+        </button>
+
+      </div>
+
+      <div id="lista"></div>
+
+    </section>
+
+
+
+    <!-- registros -->
+    <section class="card">
+
+      <div class="top-card">
+
+        <h2>
+          🕒 Registros
+        </h2>
+
+        <button
+          class="
+            small-btn
+            delete-btn
+          "
+          onclick="resetarRegistros()"
+        >
+
+          Resetar Registros
+
+        </button>
+
+      </div>
+
+      <div id="registros"></div>
+
+    </section>
+
+  </div>
 
 
 
   <!-- ===================== -->
-  <!-- 👥 PESSOAS -->
+  <!-- 👀 MONITOR -->
   <!-- ===================== -->
-  <section class="card">
+  <div
+    id="monitorArea"
+    style="display:none"
+  >
 
-    <h2>
-      👥 Pessoas Cadastradas
-    </h2>
+    <section class="card">
 
-    <div id="lista"></div>
+      <h2>
+        👀 Monitoramento
+      </h2>
 
-  </section>
+      <div id="monitorRegistros"></div>
 
+    </section>
 
-
-  <!-- ===================== -->
-  <!-- 🕒 REGISTROS -->
-  <!-- ===================== -->
-  <section class="card">
-
-    <h2>
-      🕒 Últimos Registros
-    </h2>
-
-    <div id="registros"></div>
-
-  </section>
+  </div>
 
 
 </div>
