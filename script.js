@@ -1,83 +1,63 @@
-let faceCapturada = null;
-  if(!deteccao){
-    alert("Nenhum rosto detectado");
-    return;
-  }
+let face=null;
+ document.querySelectorAll("section")
+ .forEach(s=>s.classList.remove("on"));
+ document.getElementById(id).classList.add("on");
 
-  faceCapturada = Array.from(deteccao.descriptor);
 
-  alert("Face capturada");
-
+async function cam(){
+ try{
+  const s=await navigator.mediaDevices.getUserMedia({video:true});
+  video.srcObject=s;
+ }catch(e){alert("Camera indisponível")}
 }
 
-
-function salvarCadastro(){
-
-  const nome = document.getElementById("nome").value;
-
-  if(!nome || !faceCapturada){
-    alert("Complete os dados");
-    return;
-  }
-
-  salvarAluno({
-    nome,
-    face:faceCapturada
-  });
-
-  carregarAlunos();
-
+async function modelos(){
+ await faceapi.nets.tinyFaceDetector.loadFromUri("./models");
+ await faceapi.nets.faceLandmark68Net.loadFromUri("./models");
+ await faceapi.nets.faceRecognitionNet.loadFromUri("./models");
 }
 
+async function capturar(){
+ const d=await faceapi
+ .detectSingleFace(video,new faceapi.TinyFaceDetectorOptions())
+ .withFaceLandmarks()
+ .withFaceDescriptor();
+
+ if(!d)return alert("Nenhum rosto");
+
+ face=Array.from(d.descriptor);
+ alert("Face capturada");
+}
+
+function salvar(){
+ if(!nome.value||!face)return alert("Complete os dados");
+
+ salvarAluno({nome:nome.value,face});
+ nome.value="";
+ face=null;
+ carregarAlunos();
+}
 
 function carregarAlunos(){
+ listarAlunos(a=>{
+  lista.innerHTML="";
+  ta.innerText=a.length;
 
-  listarAlunos((alunos)=>{
-
-    const lista = document.getElementById("lista");
-
-    lista.innerHTML = "";
-
-    document.getElementById("totalAlunos").innerText = alunos.length;
-
-    alunos.forEach(aluno=>{
-
-      const div = document.createElement("div");
-
-      div.className = "aluno";
-
-      div.innerHTML = `
-        <span>${aluno.nome}</span>
-
-        <button onclick="deletarAluno(${aluno.id})">
-          Excluir
-        </button>
-      `;
-
-      lista.appendChild(div);
-
-    });
-
+  a.forEach(x=>{
+   const d=document.createElement("div");
+   d.className="aluno";
+   d.innerHTML=`<span>${x.nome}</span>
+   <button onclick="deletarAluno(${x.id})">Excluir</button>`;
+   lista.appendChild(d);
   });
-
+ });
 }
 
-
-function filtrarAlunos(e){
-
-  const termo = e.target.value.toLowerCase();
-
-  const alunos = document.querySelectorAll(".aluno");
-
-  alunos.forEach(aluno=>{
-
-    const texto = aluno.innerText.toLowerCase();
-
-    aluno.style.display =
-      texto.includes(termo)
-      ? "flex"
-      : "none";
-
-  });
-
+function filtro(e){
+ document.querySelectorAll(".aluno")
+ .forEach(a=>{
+  a.style.display=a.innerText.toLowerCase()
+  .includes(e.target.value.toLowerCase())
+  ?"flex":"none";
+ });
 }

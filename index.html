@@ -1,82 +1,53 @@
 <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FacePresence</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
 
-      <div class="card">
-        <h3 id="totalPresencas">0</h3>
-        <p>Presenças</p>
-      </div>
-    </div>
-  </section>
+<aside>
+<h1>🎓 FacePresence</h1>
+<button onclick="sec('dash')">Dashboard</button>
+<button onclick="sec('cad')">Cadastro</button>
+<button onclick="sec('cam')">Camera</button>
+</aside>
 
+<main>
 
-  <!-- CADASTRO -->
-  <section id="cadastro" class="secao">
-
-    <h2>👨‍🎓 Cadastro</h2>
-
-    <input type="text" id="nome" placeholder="Nome do aluno">
-
-    <button id="btnCapturar">
-      Capturar Face
-    </button>
-
-    <video id="video" autoplay playsinline muted></video>
-
-    <canvas id="canvas"></canvas>
-
-    <button id="btnSalvar">
-      Salvar Aluno
-    </button>
-
-    <h3>📋 Alunos</h3>
-
-    <input type="text" id="buscar" placeholder="Buscar aluno">
-
-    <div id="lista"></div>
-
-  </section>
-
-
-  <!-- PRESENÇA -->
-  <section id="presenca" class="secao">
-
-    <h2>📌 Presença Automática</h2>
-
-    <button id="btnReconhecer">
-      Iniciar Reconhecimento
-    </button>
-
-    <div id="presencas"></div>
-
-  </section>
-
-
-  <!-- CAMERA MOBILE -->
-  <section id="camera" class="secao">
-
-    <h2>📷 Webcam Mobile</h2>
-
-    <button onclick="gerarQRCodeCamera()">
-      Gerar QR
-    </button>
-
-    <div id="qrcode"></div>
-
-    <textarea id="answer" placeholder="Cole o answer aqui"></textarea>
-
-    <button onclick="receberAnswer()">
-      Conectar Celular
-    </button>
-
-  </section>
-
+<section id="dash" class="on">
+<h2>Dashboard</h2>
+<div class="cards">
+<div class="card"><h3 id="ta">0</h3><p>Alunos</p></div>
 </div>
+</section>
+
+<section id="cad">
+<h2>Cadastro</h2>
+<input id="nome" placeholder="Nome">
+<button id="cap">Capturar Face</button>
+<button id="save">Salvar</button>
+<input id="busca" placeholder="Buscar">
+<video id="video" autoplay playsinline muted></video>
+<div id="lista"></div>
+</section>
+
+<section id="cam">
+<h2>Camera Mobile</h2>
+<button onclick="gerarQRCodeCamera()">Gerar QR</button>
+<div id="qrcode"></div>
+<textarea id="answer"></textarea>
+<button onclick="receberAnswer()">Conectar</button>
+</section>
+
+</main>
 
 <script src="./qrcode.min.js"></script>
 <script src="./face-api.min.js"></script>
-
-<script defer src="./db.js"></script>
-<script defer src="./rtc.js"></script>
-<script defer src="./script.js"></script>
-
+<script src="./db.js"></script>
+<script src="./rtc.js"></script>
+<script src="./script.js"></script>
 </body>
 </html>

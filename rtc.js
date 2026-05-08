@@ -1,64 +1,70 @@
-window.pc = null;
-    video:true,
-    audio:false
-  });
+window.pc=null;
 
-  stream.getTracks().forEach(track=>{
-    window.pc.addTrack(track, stream);
-  });
+ window.pc=new RTCPeerConnection({
+  iceServers:[{urls:"stun:stun.l.google.com:19302"}]
+ });
 
-  const answer = await window.pc.createAnswer();
-
-  await window.pc.setLocalDescription(answer);
-
-  await esperarICE();
-
-  const textarea = document.createElement("textarea");
-
-  textarea.value = JSON.stringify(window.pc.localDescription);
-
-  textarea.style.width = "95%";
-  textarea.style.height = "180px";
-
-  document.body.appendChild(textarea);
-
-});
+ window.pc.ontrack=e=>{
+  const v=document.getElementById("video");
+  if(!v)return;
+  v.srcObject=e.streams[0];
+  v.play().catch(()=>{});
+ };
 
 
-async function receberAnswer(){
+async function gerarQRCodeCamera(){
+ criarPC();
+ const o=await window.pc.createOffer();
+ await window.pc.setLocalDescription(o);
+ await ice();
 
-  const txt = document.getElementById("answer").value;
+ const link=location.href.split("?")[0]+
+ "?camera="+
+ encodeURIComponent(JSON.stringify(window.pc.localDescription));
 
-  if(!txt) return;
+ document.getElementById("qrcode").innerHTML="";
 
-  const answer = JSON.parse(txt);
-
-  await window.pc.setRemoteDescription(answer);
-
+ QRCode.toCanvas(link,{width:280},(e,c)=>{
+  document.getElementById("qrcode").appendChild(c);
+ });
 }
 
+window.addEventListener("load",async()=>{
+ const p=new URLSearchParams(location.search);
+ const cam=p.get("camera");
+ if(!cam)return;
 
-function esperarICE(){
+ criarPC();
 
-  return new Promise(resolve=>{
+ await window.pc.setRemoteDescription(
+  JSON.parse(decodeURIComponent(cam))
+ );
 
-    if(window.pc.iceGatheringState === "complete"){
-      resolve();
-    }
+ const s=await navigator.mediaDevices.getUserMedia({video:true,audio:false});
 
-    window.pc.addEventListener(
-      "icegatheringstatechange",
-      ()=>{
+ s.getTracks().forEach(t=>window.pc.addTrack(t,s));
 
-        if(window.pc.iceGatheringState === "complete"){
-          resolve();
-        }
+ const a=await window.pc.createAnswer();
+ await window.pc.setLocalDescription(a);
+ await ice();
 
-      }
-    );
+ const tx=document.createElement("textarea");
+ tx.value=JSON.stringify(window.pc.localDescription);
+ document.body.appendChild(tx);
+});
 
-    setTimeout(resolve,3000);
+async function receberAnswer(){
+ const txt=document.getElementById("answer").value;
+ if(!txt)return;
+ await window.pc.setRemoteDescription(JSON.parse(txt));
+}
 
+function ice(){
+ return new Promise(r=>{
+  if(window.pc.iceGatheringState==="complete")r();
+  window.pc.addEventListener("icegatheringstatechange",()=>{
+   if(window.pc.iceGatheringState==="complete")r();
   });
-
+  setTimeout(r,3000);
+ });
 }
