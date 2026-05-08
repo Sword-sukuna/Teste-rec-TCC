@@ -283,6 +283,7 @@ async function iniciarReconhecimento(){
 }
 
 
+
 // =========================
 // 🕒 REGISTRAR PONTO
 // =========================
@@ -291,18 +292,22 @@ function registrarPonto(pessoa){
   const agora =
     Date.now();
 
-  // delay
+  // anti spam
   if(
+
     ultimoRegistro[
       pessoa.id
     ]
+
     &&
+
     agora -
     ultimoRegistro[
       pessoa.id
     ]
     <
     delayRegistro
+
   ){
 
     return;
@@ -313,6 +318,10 @@ function registrarPonto(pessoa){
     pessoa.id
   ] = agora;
 
+
+  // =====================
+  // 📅 DATA
+  // =====================
   const dataObj =
     new Date();
 
@@ -326,24 +335,76 @@ function registrarPonto(pessoa){
       "pt-BR"
     );
 
-  salvarRegistro({
 
-    pessoaId:
-      pessoa.id,
+  // =====================
+  // 🔄 ENTRADA / SAÍDA
+  // =====================
+  listarRegistrosPessoa(
 
-    nome:
-      pessoa.nome,
+    pessoa.id,
 
-    horario,
+    registros=>{
 
-    data
+      let tipo =
+        "Entrada";
 
-  });
+      // último registro
+      const ultimo =
+        registros[
+          registros.length - 1
+        ];
 
-  carregarRegistros();
+      // alterna
+      if(ultimo){
 
-  atualizarStatus(
-    `✅ ${pessoa.nome} registrado às ${horario}`
+        tipo =
+          ultimo.tipo
+          ===
+          "Entrada"
+          ?
+          "Saída"
+          :
+          "Entrada";
+
+      }
+
+
+      // =================
+      // 💾 SALVAR
+      // =================
+      salvarRegistro({
+
+        pessoaId:
+          pessoa.id,
+
+        nome:
+          pessoa.nome,
+
+        horario,
+
+        data,
+
+        tipo
+
+      });
+
+
+      // atualizar UI
+      carregarRegistros();
+
+      carregarMonitor();
+
+
+      atualizarStatus(
+
+        `✅ ${pessoa.nome}
+         registrou ${tipo}
+         às ${horario}`
+
+      );
+
+    }
+
   );
 
 }
