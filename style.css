@@ -1,228 +1,283 @@
 
+/* ========================= */
+/* 🌍 RESET */
+/* ========================= */
 *{
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:Arial,sans-serif;
+  font-family:
+    Arial,
+    sans-serif;
 }
 
-
-/* ========================= */
-/* 🌍 BODY */
-/* ========================= */
 body{
 
-  display:flex;
-
-  min-height:100vh;
-
-  background:#0f172a;
-
-  color:#fff;
-
-}
-
-
-/* ========================= */
-/* 📚 SIDEBAR */
-/* ========================= */
-aside{
-
-  width:230px;
-
-  background:#111827;
-
-  padding:25px 15px;
-
-  display:flex;
-
-  flex-direction:column;
-
-  gap:12px;
-
-  border-right:1px solid #1e293b;
-
-}
-
-aside h1{
-
-  text-align:center;
-
-  margin-bottom:20px;
-
-  font-size:24px;
-
-}
-
-aside button{
-
-  padding:14px;
-
-  border:none;
-
-  border-radius:12px;
-
-  background:#1e293b;
+  background:#050816;
 
   color:white;
 
-  cursor:pointer;
+  min-height:100vh;
 
-  transition:0.2s;
-
-}
-
-aside button:hover{
-
-  background:#2563eb;
+  overflow-x:hidden;
 
 }
 
 
 /* ========================= */
-/* 📄 MAIN */
+/* 🌌 BACKGROUND */
 /* ========================= */
-main{
+.bg{
 
-  flex:1;
+  position:fixed;
+
+  inset:0;
+
+  background:
+    radial-gradient(
+      circle at top,
+      #1e3a8a,
+      #050816 60%
+    );
+
+  z-index:-1;
+
+}
+
+
+/* ========================= */
+/* 📱 APP */
+/* ========================= */
+.app{
+
+  width:100%;
+
+  max-width:500px;
+
+  margin:auto;
+
+  padding:20px;
+
+}
+
+
+/* ========================= */
+/* 🧠 HEADER */
+/* ========================= */
+header{
+
+  margin-bottom:25px;
+
+}
+
+.logo{
 
   display:flex;
+
+  align-items:center;
+
+  gap:15px;
+
+}
+
+.logo-circle{
+
+  width:65px;
+
+  height:65px;
+
+  border-radius:50%;
+
+  display:flex;
+
+  align-items:center;
 
   justify-content:center;
 
-  align-items:flex-start;
+  font-size:30px;
 
-  padding:40px 20px;
+  background:
+    linear-gradient(
+      135deg,
+      #2563eb,
+      #7c3aed
+    );
+
+  box-shadow:
+    0 0 30px rgba(37,99,235,0.4);
+
+}
+
+.logo h1{
+
+  font-size:30px;
+
+}
+
+.logo p{
+
+  opacity:0.7;
+
+  margin-top:3px;
 
 }
 
 
 /* ========================= */
-/* 📦 SECTION */
+/* 📷 CAMERA */
 /* ========================= */
-section{
+.camera-box{
 
-  display:none;
+  position:relative;
 
   width:100%;
 
-  max-width:950px;
+  border-radius:30px;
 
-  background:#111827;
-
-  padding:30px;
-
-  border-radius:25px;
-
-  box-shadow:
-    0 0 25px rgba(0,0,0,0.3);
-
-}
-
-section.on{
-
-  display:block;
-
-}
-
-
-/* ========================= */
-/* 📝 TÍTULOS */
-/* ========================= */
-h2{
+  overflow:hidden;
 
   margin-bottom:20px;
 
-  font-size:28px;
+  box-shadow:
+    0 0 30px rgba(0,0,0,0.4);
 
 }
 
-
-/* ========================= */
-/* 📊 CARDS */
-/* ========================= */
-.cards{
-
-  display:flex;
-
-  gap:20px;
-
-  flex-wrap:wrap;
-
-}
-
-.card{
-
-  flex:1;
-
-  min-width:200px;
-
-  background:#1e293b;
-
-  padding:25px;
-
-  border-radius:20px;
-
-  text-align:center;
-
-}
-
-.card h3{
-
-  font-size:40px;
-
-  margin-bottom:10px;
-
-}
-
-
-/* ========================= */
-/* 🧾 INPUTS */
-/* ========================= */
-input,
-textarea{
+video{
 
   width:100%;
 
-  padding:14px;
+  display:block;
 
-  margin-top:15px;
+  background:black;
+
+}
+
+
+/* overlay futurista */
+.camera-overlay{
+
+  position:absolute;
+
+  inset:0;
+
+  border:3px solid rgba(255,255,255,0.15);
+
+  border-radius:30px;
+
+  pointer-events:none;
+
+}
+
+
+/* ========================= */
+/* 📡 STATUS */
+/* ========================= */
+.status-box{
+
+  margin-bottom:20px;
+
+}
+
+#status{
+
+  background:#111827;
+
+  border-radius:18px;
+
+  padding:16px;
+
+  text-align:center;
+
+  font-size:15px;
+
+  border:
+    1px solid rgba(255,255,255,0.08);
+
+}
+
+
+/* ========================= */
+/* 📦 CARDS */
+/* ========================= */
+.card{
+
+  background:#111827;
+
+  border-radius:25px;
+
+  padding:20px;
+
+  margin-bottom:20px;
+
+  box-shadow:
+    0 0 25px rgba(0,0,0,0.25);
+
+  border:
+    1px solid rgba(255,255,255,0.05);
+
+}
+
+.card h2{
+
+  margin-bottom:18px;
+
+  font-size:20px;
+
+}
+
+
+/* ========================= */
+/* 🧾 INPUT */
+/* ========================= */
+input{
+
+  width:100%;
+
+  padding:15px;
 
   border:none;
 
-  border-radius:12px;
+  outline:none;
 
-  background:#1e293b;
+  border-radius:15px;
+
+  background:#1f2937;
 
   color:white;
 
   font-size:15px;
 
-}
-
-textarea{
-
-  min-height:140px;
-
-  resize:vertical;
+  margin-bottom:15px;
 
 }
 
 
 /* ========================= */
-/* 🔘 BOTÕES */
+/* 🔘 BOTÃO */
 /* ========================= */
 button{
 
-  padding:14px 20px;
+  width:100%;
+
+  padding:15px;
 
   border:none;
 
-  border-radius:12px;
+  border-radius:16px;
 
-  background:#2563eb;
+  background:
+    linear-gradient(
+      135deg,
+      #2563eb,
+      #7c3aed
+    );
 
   color:white;
+
+  font-size:16px;
+
+  font-weight:bold;
 
   cursor:pointer;
 
@@ -230,55 +285,18 @@ button{
 
 }
 
-button:hover{
+button:active{
 
-  opacity:0.9;
-
-}
-
-
-/* ========================= */
-/* 🎛 CONTAINER BOTÕES */
-/* ========================= */
-.botoes{
-
-  display:flex;
-
-  gap:15px;
-
-  margin-top:15px;
-
-  flex-wrap:wrap;
+  transform:scale(0.98);
 
 }
 
 
 /* ========================= */
-/* 📹 VIDEO */
+/* 👥 LISTAS */
 /* ========================= */
-video{
-
-  width:100%;
-
-  max-width:700px;
-
-  margin:25px auto;
-
-  display:block;
-
-  border-radius:20px;
-
-  background:#000;
-
-  border:2px solid #1e293b;
-
-}
-
-
-/* ========================= */
-/* 📋 LISTA */
-/* ========================= */
-#lista{
+#lista,
+#registros{
 
   display:flex;
 
@@ -286,17 +304,19 @@ video{
 
   gap:12px;
 
-  margin-top:25px;
-
 }
 
-.aluno{
 
-  background:#1e293b;
+/* ========================= */
+/* 👤 ITEM */
+/* ========================= */
+.item{
 
-  padding:15px 20px;
+  background:#1f2937;
 
-  border-radius:15px;
+  border-radius:18px;
+
+  padding:15px;
 
   display:flex;
 
@@ -308,76 +328,44 @@ video{
 
 
 /* ========================= */
-/* 📷 QR */
+/* 🗑 BOTÃO EXCLUIR */
 /* ========================= */
-#qrcode{
+.delete{
 
-  margin-top:25px;
+  width:auto;
 
-  display:flex;
+  padding:10px 14px;
 
-  justify-content:center;
+  border-radius:12px;
+
+  background:#dc2626;
+
+  font-size:13px;
 
 }
 
 
 /* ========================= */
-/* 📱 RESPONSIVO */
+/* ✨ ANIMAÇÃO */
 /* ========================= */
-@media(max-width:900px){
+.card,
+#status,
+.camera-box{
 
-  body{
+  animation:fade 0.4s ease;
 
-    flex-direction:column;
+}
 
+@keyframes fade{
+
+  from{
+    opacity:0;
+    transform:translateY(10px);
   }
 
-  aside{
-
-    width:100%;
-
-    height:auto;
-
-    flex-direction:row;
-
-    flex-wrap:wrap;
-
-    justify-content:center;
-
-    border-right:none;
-
-    border-bottom:1px solid #1e293b;
-
-  }
-
-  aside h1{
-
-    width:100%;
-
-  }
-
-  main{
-
-    padding:20px;
-
-  }
-
-  section{
-
-    padding:20px;
-
-  }
-
-  .cards{
-
-    flex-direction:column;
-
-  }
-
-  .botoes{
-
-    flex-direction:column;
-
+  to{
+    opacity:1;
+    transform:translateY(0);
   }
 
 }
