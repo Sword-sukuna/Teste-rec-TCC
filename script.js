@@ -207,14 +207,11 @@ async function carregarModelos(){
 }
 
 
+
 // =========================
-// 👤 CADASTRAR
+// 👤 CADASTRAR PESSOA
 // =========================
 async function cadastrarPessoa(){
-
-  if(processando) return;
-
-  processando = true;
 
   const nome =
     document
@@ -230,68 +227,121 @@ async function cadastrarPessoa(){
       "Digite um nome"
     );
 
-    processando = false;
-
     return;
 
   }
+
 
   atualizarStatus(
     "📸 Capturando rosto..."
   );
 
-  const video =
-    document.getElementById(
-      "video"
-    );
 
-  const deteccao =
-    await faceapi
-    .detectSingleFace(
-      video,
-      new faceapi
-.SsdMobilenetv1Options({
-  minConfidence:0.7
-})
-    )
-    .withFaceLandmarks()
-    .withFaceDescriptor();
+  // =====================
+  // 🧠 MULTI CAPTURA
+  // =====================
+  const descritores = [];
 
-  if(!deteccao){
+
+  for(
+    let i=0;
+    i<5;
+    i++
+  ){
 
     atualizarStatus(
-      "❌ Nenhum rosto detectado"
+
+      `📸 Captura ${
+        i+1
+      } de 5`
+
     );
 
-    processando = false;
+    await esperar(800);
+
+    const deteccao =
+      await faceapi
+      .detectSingleFace(
+
+        video,
+
+        new faceapi
+        .SsdMobilenetv1Options({
+          minConfidence:0.7
+        })
+
+      )
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+
+    if(
+      deteccao
+    ){
+
+      descritores.push(
+        deteccao.descriptor
+      );
+
+    }
+
+  }
+
+
+  // sem capturas
+  if(
+    descritores.length
+    <
+    3
+  ){
+
+    atualizarStatus(
+      "❌ Falha facial"
+    );
 
     return;
 
   }
 
-  const face =
-    Array.from(
-      deteccao.descriptor
+
+  // =====================
+  // 🧮 MÉDIA FACIAL
+  // =====================
+  const media =
+    calcularMediaFace(
+      descritores
     );
 
+
+  // =====================
+  // 💾 SALVAR
+  // =====================
   salvarPessoa({
+
     nome,
-    face
+
+    face:
+      Array.from(media)
+
   });
 
+
+  // limpar
   document
     .getElementById(
       "nome"
     )
     .value = "";
 
-  carregarPessoas();
 
   atualizarStatus(
-    `✅ ${nome} cadastrado`
+
+    `✅ ${nome}
+     cadastrado`
+
   );
 
-  processando = false;
+
+  carregarPessoas();
 
 }
 
@@ -1283,6 +1333,54 @@ function falar(texto){
 
   speechSynthesis.speak(
     voz
+  );
+
+}
+
+
+// =========================
+// 🧮 MÉDIA FACIAL
+// =========================
+function calcularMediaFace(
+  descritores
+){
+
+  const media =
+    new Float32Array(128);
+
+  for(
+    let i=0;
+    i<128;
+    i++
+  ){
+
+    let soma = 0;
+
+    descritores.forEach(
+      d=>{
+        soma += d[i];
+      }
+    );
+
+    media[i] =
+      soma /
+      descritores.length;
+
+  }
+
+  return media;
+
+}
+
+
+
+// =========================
+// ⏳ ESPERAR
+// =========================
+function esperar(ms){
+
+  return new Promise(
+    r=>setTimeout(r,ms)
   );
 
 }
