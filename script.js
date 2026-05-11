@@ -195,9 +195,9 @@ async function carregarModelos(){
   );
 
   await faceapi
-    .nets
-    .ssdMobilenetv1
-    .loadFromUri("./models");
+  .nets
+  .tinyFaceDetector
+  .loadFromUri("./models");
 
   await faceapi
     .nets
@@ -377,8 +377,12 @@ async function iniciarReconhecimento(){
         .detectSingleFace(
           video,
           new faceapi
-.SsdMobilenetv1Options({
-  minConfidence:0.7
+.TinyFaceDetectorOptions({
+
+  inputSize:320,
+
+  scoreThreshold:0.5
+
 })
         )
         .withFaceLandmarks()
