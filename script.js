@@ -187,7 +187,7 @@ async function carregarModelos(){
 
   await faceapi
     .nets
-    .tinyFaceDetector
+    .ssdMobilenetv1
     .loadFromUri("./models");
 
   await faceapi
@@ -250,7 +250,9 @@ async function cadastrarPessoa(){
     .detectSingleFace(
       video,
       new faceapi
-      .TinyFaceDetectorOptions()
+.SsdMobilenetv1Options({
+  minConfidence:0.7
+})
     )
     .withFaceLandmarks()
     .withFaceDescriptor();
@@ -316,7 +318,9 @@ async function iniciarReconhecimento(){
         .detectSingleFace(
           video,
           new faceapi
-          .TinyFaceDetectorOptions()
+.SsdMobilenetv1Options({
+  minConfidence:0.7
+})
         )
         .withFaceLandmarks()
         .withFaceDescriptor();
