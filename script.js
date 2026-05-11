@@ -758,12 +758,15 @@ function carregarRegistros(){
   listarRegistros(
     registros=>{
 
-      const box =
-        document.getElementById(
-          "registros"
-        );
+      
+const box =
+  document.getElementById(
+    "registros"
+  );
 
-      box.innerHTML = "";
+if(!box) return;
+
+box.innerHTML = "";
 
       registros
       .slice(0,10)
