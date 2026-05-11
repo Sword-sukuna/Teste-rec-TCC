@@ -149,6 +149,7 @@ if(
 
 );
 
+
 // =========================
 // 📷 CAMERA
 // =========================
@@ -160,25 +161,27 @@ async function iniciarCamera(){
       await navigator
       .mediaDevices
       .getUserMedia({
+
         video:{
           facingMode:"user"
         },
+
         audio:false
+
       });
 
-    document
-      .getElementById(
-        "video"
-      )
-      .srcObject = stream;
+    video.srcObject =
+      stream;
+
+    await video.play();
 
   }catch(e){
 
-    alert(
-      "Erro ao acessar câmera"
-    );
-
     console.error(e);
+
+    atualizarStatus(
+      "❌ Camera indisponível"
+    );
 
   }
 
