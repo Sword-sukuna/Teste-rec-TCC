@@ -1,5 +1,14 @@
 
 // =========================
+// 🧠 RECONHECIMENTO ESTÁVEL
+// =========================
+let rostoAtual = null;
+
+let framesReconhecidos = 0;
+
+const framesNecessarios = 3;
+
+// =========================
 // 🔐 MODO
 // =========================
 const modoSistema =
