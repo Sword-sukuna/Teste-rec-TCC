@@ -411,17 +411,62 @@ async function iniciarReconhecimento(){
                   pessoa.face
                 );
 
-              if(dist < 0.5){
+              
+if(dist < 0.45){
 
-                reconhecido = true;
+  reconhecido = true;
 
-                registrarPonto(
-                  pessoa
-                );
+
+  // =====================
+  // 🧠 ESTABILIZAÇÃO
+  // =====================
+  if(
+
+    rostoAtual
+    ===
+    pessoa.id
+
+  ){
+
+    framesReconhecidos++;
+
+  }else{
+
+    rostoAtual =
+      pessoa.id;
+
+    framesReconhecidos = 1;
+
+  }
+
+
+  // confirmou rosto
+  if(
+
+    framesReconhecidos
+    >=
+    framesNecessarios
+
+  ){
+
+    registrarPonto(
+      pessoa
+    );
+
+    framesReconhecidos = 0;
+
+  }
+
+}else{
+
+  rostoAtual = null;
+
+  framesReconhecidos = 0;
+
+}
 
               }
 
-            }
           );
 
           if(!reconhecido){
