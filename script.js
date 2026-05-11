@@ -664,12 +664,15 @@ function carregarPessoas(){
   listarPessoas(
     pessoas=>{
 
-      const lista =
-        document.getElementById(
-          "lista"
-        );
+      
+const lista =
+  document.getElementById(
+    "lista"
+  );
 
-      lista.innerHTML = "";
+if(!lista) return;
+
+lista.innerHTML = "";
 
       pessoas.forEach(
         pessoa=>{
