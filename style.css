@@ -34,16 +34,29 @@ body{
   inset:0;
 
   background:
+
     radial-gradient(
       circle at top,
-      #1e3a8a,
-      #050816 60%
+      rgba(37,99,235,0.22),
+      transparent 35%
+    ),
+
+    radial-gradient(
+      circle at bottom right,
+      rgba(124,58,237,0.18),
+      transparent 30%
+    ),
+
+    linear-gradient(
+      180deg,
+      #020617 0%,
+      #050816 45%,
+      #020617 100%
     );
 
-  z-index:-1;
+  z-index:-3;
 
 }
-
 
 /* ========================= */
 /* 📱 APP */
@@ -82,11 +95,11 @@ header{
 
 .logo-circle{
 
-  width:70px;
+  width:85px;
 
-  height:70px;
+  height:85px;
 
-  border-radius:50%;
+  border-radius:28px;
 
   display:flex;
 
@@ -94,7 +107,7 @@ header{
 
   justify-content:center;
 
-  font-size:32px;
+  font-size:40px;
 
   background:
     linear-gradient(
@@ -104,7 +117,10 @@ header{
     );
 
   box-shadow:
-    0 0 30px rgba(37,99,235,0.4);
+
+    0 0 35px rgba(37,99,235,0.45),
+
+    inset 0 0 20px rgba(255,255,255,0.08);
 
 }
 
@@ -752,6 +768,8 @@ button:active{
 /* ========================= */
 .face-frame{
 
+  backdrop-filter:blur(2px);
+
   width:220px;
 
   height:280px;
@@ -812,6 +830,8 @@ button:active{
 /* ========================= */
 .scan-line{
 
+  opacity:0.95;
+  
   position:absolute;
 
   width:240px;
@@ -940,9 +960,9 @@ button:active{
   max-width:420px;
 
   background:
-    rgba(15,23,42,0.92);
+    rgba(15,23,42,0.88);
 
-  backdrop-filter:blur(18px);
+  backdrop-filter:blur(22px);
 
   border:
     1px solid rgba(255,255,255,0.08);
@@ -952,10 +972,18 @@ button:active{
   padding:35px 25px;
 
   box-shadow:
-    0 10px 40px rgba(0,0,0,0.45);
+
+    0 10px 40px rgba(0,0,0,0.45),
+
+    0 0 80px rgba(37,99,235,0.08),
+
+    inset 0 1px 1px rgba(255,255,255,0.05);
+
+  position:relative;
+
+  overflow:hidden;
 
 }
-
 
 /* ========================= */
 /* 🧠 LOGIN LOGO */
@@ -970,9 +998,24 @@ button:active{
 
 .login-logo h1{
 
-  font-size:42px;
+  font-size:48px;
 
   margin-top:12px;
+
+  font-weight:800;
+
+  letter-spacing:1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      white,
+      #93c5fd
+    );
+
+  -webkit-background-clip:text;
+
+  -webkit-text-fill-color:transparent;
 
 }
 
@@ -1034,10 +1077,18 @@ button:active{
 
   transition:0.25s;
 
+  letter-spacing:0.5px;
+
+position:relative;
+
+overflow:hidden;
+
 }
 
 .login-card button:hover{
 
+  box-shadow:
+  0 10px 25px rgba(37,99,235,0.35);
   transform:translateY(-2px);
 
 }
@@ -1079,5 +1130,94 @@ button:active{
   text-align:center;
 
   color:#f87171;
+
+}
+
+/* ========================= */
+/* ✨ PARTICLES */
+/* ========================= */
+
+.particles{
+
+  position:fixed;
+
+  inset:0;
+
+  overflow:hidden;
+
+  z-index:-2;
+
+  pointer-events:none;
+
+}
+
+
+.particles::before,
+.particles::after{
+
+  content:"";
+
+  position:absolute;
+
+  width:200%;
+  height:200%;
+
+  background-image:
+    radial-gradient(
+      rgba(255,255,255,0.12) 1px,
+      transparent 1px
+    );
+
+  background-size:40px 40px;
+
+  animation:moveParticles 40s linear infinite;
+
+}
+
+
+.particles::after{
+
+  animation-direction:reverse;
+
+  opacity:0.35;
+
+}
+
+
+@keyframes moveParticles{
+
+  from{
+    transform:translate(0,0);
+  }
+
+  to{
+    transform:translate(-200px,-200px);
+  }
+
+}
+
+/* ========================= */
+/* ✨ LOGIN GLOW */
+/* ========================= */
+
+.login-card::before{
+
+  content:"";
+
+  position:absolute;
+
+  inset:-2px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(37,99,235,0.35),
+      transparent,
+      rgba(124,58,237,0.25)
+    );
+
+  z-index:-1;
+
+  filter:blur(25px);
 
 }
