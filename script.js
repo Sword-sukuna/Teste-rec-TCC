@@ -277,10 +277,15 @@ async function cadastrarPessoa(){
 
         video,
 
-        new faceapi
-        .SsdMobilenetv1Options({
-          minConfidence:0.7
-        })
+        
+new faceapi
+.TinyFaceDetectorOptions({
+
+  inputSize:320,
+
+  scoreThreshold:0.5
+
+})
 
       )
       .withFaceLandmarks()
