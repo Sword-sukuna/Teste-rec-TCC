@@ -768,6 +768,8 @@ button:active{
 /* ========================= */
 .face-frame{
 
+position:relative;
+
   backdrop-filter:blur(2px);
 
   width:220px;
@@ -831,7 +833,7 @@ button:active{
 .scan-line{
 
   opacity:0.95;
-  
+
   position:absolute;
 
   width:240px;
@@ -1039,17 +1041,28 @@ button:active{
 
   outline:none;
 
-  margin-bottom:16px;
+  margin-bottom:18px;
 
-  padding:16px;
+  padding:18px;
 
-  border-radius:18px;
+  border-radius:20px;
 
-  background:#111827;
+  background:
+    rgba(17,24,39,0.72);
 
   color:white;
 
   font-size:15px;
+
+  border:
+    1px solid rgba(255,255,255,0.05);
+
+  transition:0.3s;
+
+  backdrop-filter:blur(10px);
+
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.03);
 
 }
 
@@ -1079,9 +1092,15 @@ button:active{
 
   letter-spacing:0.5px;
 
-position:relative;
+  position:relative;
 
-overflow:hidden;
+  overflow:hidden;
+
+  box-shadow:
+
+    inset 0 1px 1px rgba(255,255,255,0.08),
+
+    0 10px 25px rgba(0,0,0,0.25);
 
 }
 
@@ -1219,5 +1238,236 @@ overflow:hidden;
   z-index:-1;
 
   filter:blur(25px);
+
+}
+
+/* ========================= */
+/* 🌐 FUTURE GRID */
+/* ========================= */
+
+body::before{
+
+  content:"";
+
+  position:fixed;
+
+  inset:0;
+
+  background:
+
+    linear-gradient(
+      rgba(255,255,255,0.025) 1px,
+      transparent 1px
+    ),
+
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,0.025) 1px,
+      transparent 1px
+    );
+
+  background-size:40px 40px;
+
+  mask-image:
+    radial-gradient(
+      circle at center,
+      black,
+      transparent 85%
+    );
+
+  pointer-events:none;
+
+  z-index:-1;
+
+}
+
+/* ========================= */
+/* ✨ CYBER BORDER */
+/* ========================= */
+
+.login-card::after{
+
+  content:"";
+
+  position:absolute;
+
+  inset:0;
+
+  border-radius:32px;
+
+  padding:1px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(96,165,250,0.5),
+      transparent,
+      rgba(168,85,247,0.45)
+    );
+
+  -webkit-mask:
+
+    linear-gradient(#fff 0 0)
+    content-box,
+
+    linear-gradient(#fff 0 0);
+
+  -webkit-mask-composite:xor;
+
+  pointer-events:none;
+
+  opacity:0.7;
+
+}
+
+/* ========================= */
+/* 🌌 AMBIENT LIGHT */
+/* ========================= */
+
+body::after{
+
+  content:"";
+
+  position:fixed;
+
+  width:700px;
+  height:700px;
+
+  background:
+    radial-gradient(
+      rgba(37,99,235,0.12),
+      transparent 70%
+    );
+
+  top:-250px;
+  right:-250px;
+
+  filter:blur(40px);
+
+  pointer-events:none;
+
+  z-index:-2;
+
+}
+
+/* ========================= */
+/* ✨ BUTTON SHINE */
+/* ========================= */
+
+.login-card button::before{
+
+  content:"";
+
+  position:absolute;
+
+  top:0;
+  left:-120%;
+
+  width:80%;
+  height:100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,0.18),
+      transparent
+    );
+
+  transform:skewX(-25deg);
+
+  transition:0.7s;
+
+}
+
+
+.login-card button:hover::before{
+
+  left:130%;
+
+}
+
+/* ========================= */
+/* 👁 FACE CORNERS */
+/* ========================= */
+
+.face-frame::before,
+.face-frame::after{
+
+  content:"";
+
+  position:absolute;
+
+  width:35px;
+  height:35px;
+
+  border:
+    4px solid #60a5fa;
+
+}
+
+
+.face-frame::before{
+
+  top:-6px;
+  left:-6px;
+
+  border-right:none;
+  border-bottom:none;
+
+}
+
+
+.face-frame::after{
+
+  bottom:-6px;
+  right:-6px;
+
+  border-left:none;
+  border-top:none;
+
+}
+
+/* ========================= */
+/* 🤖 SYSTEM TEXT */
+/* ========================= */
+
+.login-logo p{
+
+  text-transform:uppercase;
+
+  letter-spacing:2px;
+
+  font-size:12px;
+
+  opacity:0.65;
+
+}
+
+/* ========================= */
+/* ✨ FLOAT CARD */
+/* ========================= */
+
+.login-card{
+
+  animation:
+    floatCard 6s ease-in-out infinite;
+
+}
+
+
+@keyframes floatCard{
+
+  0%{
+    transform:translateY(0px);
+  }
+
+  50%{
+    transform:translateY(-6px);
+  }
+
+  100%{
+    transform:translateY(0px);
+  }
 
 }
