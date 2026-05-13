@@ -6,7 +6,7 @@ let rostoAtual = null;
 
 let framesReconhecidos = 0;
 
-const framesNecessarios = 2;
+const framesNecessarios = 3;
 
 // =========================
 // 🔐 MODO
@@ -269,7 +269,7 @@ async function cadastrarPessoa(){
 
     );
 
-    await esperar(700);
+    await esperar(1400);
 
     const deteccao =
       await faceapi
@@ -281,7 +281,7 @@ async function cadastrarPessoa(){
 new faceapi
 .TinyFaceDetectorOptions({
 
-  inputSize:256,
+  inputSize:416,
 
   scoreThreshold:0.3
 
@@ -387,7 +387,7 @@ async function iniciarReconhecimento(){
           new faceapi
 .TinyFaceDetectorOptions({
 
-  inputSize:256,
+  inputSize:416,
 
   scoreThreshold:0.3
 
