@@ -411,14 +411,24 @@ new faceapi
   // =====================
   // 💾 SALVAR
   // =====================
-  await salvarPessoa({
+  try{
 
-    nome,
+  await salvarBanco(
+    banco
+  );
 
-    face:
-      Array.from(media)
+  console.log(
+    "✅ Pessoa salva"
+  );
 
-  });
+}catch(e){
+
+  console.error(
+    "❌ Erro salvarPessoa",
+    e
+  );
+
+}
 
 
   // limpar
