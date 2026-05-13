@@ -641,7 +641,7 @@ function registrarPonto(pessoa){
 
     pessoa.id,
 
-    registros=>{
+    async registros=>{
 
       let tipo =
         "Entrada";
