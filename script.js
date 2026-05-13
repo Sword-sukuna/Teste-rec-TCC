@@ -963,6 +963,78 @@ async function deletarRegistro(id){
 }
 
 // =========================
+// 📋 CARREGAR REGISTROS
+// =========================
+async function carregarRegistros(){
+
+  await listarRegistros(
+
+    registros=>{
+
+      const lista =
+        document.getElementById(
+          "registros"
+        );
+
+      if(!lista) return;
+
+      lista.innerHTML = "";
+
+      registros.forEach(
+
+        registro=>{
+
+          const div =
+            document.createElement(
+              "div"
+            );
+
+          div.className =
+            "item";
+
+          div.innerHTML = `
+
+            <div class="item-info">
+
+              <strong>
+                👤 ${registro.nome}
+              </strong>
+
+              <small>
+                📅 ${registro.data}
+              </small>
+
+            </div>
+
+            <div>
+
+              <strong>
+                ${registro.horario}
+              </strong>
+
+              <p>
+                ${registro.tipo}
+              </p>
+
+            </div>
+
+          `;
+
+          lista.appendChild(
+            div
+          );
+
+        }
+
+      );
+
+    }
+
+  );
+
+}
+
+// =========================
 // ❌ FECHAR MODAL
 // =========================
 function fecharModal(){
