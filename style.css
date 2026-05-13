@@ -768,9 +768,7 @@ button:active{
 /* ========================= */
 .face-frame{
 
-position:relative;
-
-  backdrop-filter:blur(2px);
+  position:relative;
 
   width:220px;
 
