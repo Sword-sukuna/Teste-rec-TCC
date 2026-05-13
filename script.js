@@ -1,3 +1,82 @@
+// =========================
+// 🌐 JSONBIN
+// =========================
+const BIN_ID =
+"6a04c52e250b1311c346a586";
+
+const API_KEY =
+"$2a$10$6yb9krhejLLglNJPKaTl9OIaYEYwPiDBQ31OFfzqA.ObKsbf2352y";
+
+const BASE_URL =
+`https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+
+// pegar banco
+async function pegarBanco(){
+
+  const res =
+    await fetch(BASE_URL,{
+
+      headers:{
+        "X-Master-Key":
+        API_KEY
+      }
+
+    });
+
+  const data =
+    await res.json();
+
+  return data.record;
+
+}
+
+// salvar banco
+async function salvarBanco(data){
+
+  await fetch(BASE_URL,{
+
+    method:"PUT",
+
+    headers:{
+
+      "Content-Type":
+      "application/json",
+
+      "X-Master-Key":
+      API_KEY
+
+    },
+
+    body:JSON.stringify(data)
+
+  });
+
+}
+
+// =========================
+// 🚀 INICIAR BANCO
+// =========================
+async function iniciarBanco(){
+
+  let banco =
+    await pegarBanco();
+
+  if(!banco.pessoas){
+
+    banco = {
+
+      pessoas:[],
+
+      registros:[]
+
+    };
+
+    await salvarBanco(banco);
+
+  }
+
+}
 
 // =========================
 // 🧠 RECONHECIMENTO ESTÁVEL
@@ -109,14 +188,14 @@ if(
     await carregarModelos();
 
 
-    // =====================
-    // 📋 DADOS
-    // =====================
-    carregarPessoas();
+    // 📋 DADOS//
+     await iniciarBanco();
 
-    carregarRegistros();
+     await carregarPessoas();
 
-    carregarMonitor();
+     await carregarRegistros();
+
+     await carregarMonitor();
 
 
     // =====================
@@ -332,7 +411,7 @@ new faceapi
   // =====================
   // 💾 SALVAR
   // =====================
-  salvarPessoa({
+  await salvarPessoa({
 
     nome,
 
@@ -591,7 +670,7 @@ function registrarPonto(pessoa){
       // =================
       // 💾 SALVAR
       // =================
-      salvarRegistro({
+      await salvarRegistro({
 
         pessoaId:
           pessoa.id,
@@ -662,159 +741,127 @@ setTimeout(()=>{
 
 
 // =========================
-// 👥 CARREGAR PESSOAS
+// 👥 PESSOAS
 // =========================
-function carregarPessoas(){
+async function listarPessoas(callback){
 
-  listarPessoas(
-    pessoas=>{
+  const banco =
+    await pegarBanco();
 
-      
-const lista =
-  document.getElementById(
-    "lista"
-  );
-
-if(!lista) return;
-
-lista.innerHTML = "";
-
-      pessoas.forEach(
-        pessoa=>{
-
-          const div =
-            document
-            .createElement("div");
-
-          div.className =
-            "item";
-
-          div.innerHTML = `
-
-            <div class="item-info">
-
-              <strong>
-                👤 ${pessoa.nome}
-              </strong>
-
-              <small>
-                ID: ${pessoa.id}
-              </small>
-
-            </div>
-
-
-            <div class="item-actions">
-
-              <button
-                class="
-                  small-btn
-                  view-btn
-                "
-                onclick="
-                  abrirHistorico(
-                    ${pessoa.id},
-                    '${pessoa.nome}'
-                  )
-                "
-              >
-
-                Pontos
-
-              </button>
-
-
-              <button
-                class="
-                  small-btn
-                  delete-btn
-                "
-                onclick="
-                  deletarPessoa(
-                    ${pessoa.id}
-                  )
-                "
-              >
-
-                Excluir
-
-              </button>
-
-            </div>
-
-          `;
-
-          lista.appendChild(div);
-
-        }
-      );
-
-    }
+  callback(
+    banco.pessoas || []
   );
 
 }
 
 
-// =========================
-// 🕒 CARREGAR REGISTROS
-// =========================
-function carregarRegistros(){
+async function salvarPessoa(pessoa){
 
-  listarRegistros(
-    registros=>{
+  const banco =
+    await pegarBanco();
 
-      
-const box =
-  document.getElementById(
-    "registros"
+  pessoa.id =
+    Date.now();
+
+  banco.pessoas.push(
+    pessoa
   );
 
-if(!box) return;
-
-box.innerHTML = "";
-
-      registros
-      .slice(0,10)
-      .forEach(
-        registro=>{
-
-          const div =
-            document
-            .createElement("div");
-
-          div.className =
-            "item";
-
-          div.innerHTML = `
-
-            <div class="item-info">
-
-              <strong>
-                ✅ ${registro.nome}
-              </strong>
-
-              <small>
-                ${registro.data}
-              </small>
-
-            </div>
-
-            <strong>
-              ${registro.horario}
-            </strong>
-
-          `;
-
-          box.appendChild(div);
-
-        }
-      );
-
-    }
+  await salvarBanco(
+    banco
   );
 
 }
 
+
+async function deletarPessoa(id){
+
+  const banco =
+    await pegarBanco();
+
+  banco.pessoas =
+    banco.pessoas.filter(
+      p=>p.id !== id
+    );
+
+  await salvarBanco(
+    banco
+  );
+
+}
+
+// =========================
+// 🕒 REGISTROS
+// =========================
+async function salvarRegistro(registro){
+
+  const banco =
+    await pegarBanco();
+
+  registro.id =
+    Date.now();
+
+  banco.registros.unshift(
+    registro
+  );
+
+  await salvarBanco(
+    banco
+  );
+
+}
+
+
+async function listarRegistros(callback){
+
+  const banco =
+    await pegarBanco();
+
+  callback(
+    banco.registros || []
+  );
+
+}
+
+
+async function listarRegistrosPessoa(
+
+  pessoaId,
+  callback
+
+){
+
+  const banco =
+    await pegarBanco();
+
+  const registros =
+    banco.registros.filter(
+
+      r=>
+      r.pessoaId === pessoaId
+
+    );
+
+  callback(registros);
+
+}
+
+
+async function deletarRegistro(id){
+
+  const banco =
+    await pegarBanco();
+
+  banco.registros =
+    banco.registros.filter(
+      r=>r.id !== id
+    );
+
+  await salvarBanco(
+    banco
+  );
+
+}
 
 // =========================
 // 📋 HISTÓRICO
