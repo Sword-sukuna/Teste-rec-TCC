@@ -18,8 +18,7 @@ body{
   color:white;
 
   min-height:100vh;
-
-  overflow-x:hidden;
+  overflow:hidden;
 
 }
 
@@ -165,25 +164,11 @@ video{
 
   display:block;
 
-}
+  object-fit:cover;
 
-
-/* overlay */
-.camera-overlay{
-
-  position:absolute;
-
-  inset:0;
-
-  border:
-    3px solid rgba(255,255,255,0.12);
-
-  border-radius:30px;
-
-  pointer-events:none;
+  aspect-ratio:9/16;
 
 }
-
 
 /* ========================= */
 /* 📡 STATUS */
@@ -788,7 +773,7 @@ button:active{
     rgba(96,165,250,0.2);
 
   animation:
-    pulseFrame 2s infinite;
+    pulseFrame 4s infinite;
 
 }
 
@@ -848,7 +833,7 @@ button:active{
     );
 
   box-shadow:
-    0 0 20px #60a5fa;
+    0 0 10px #60a5fa;
 
   border-radius:999px;
 
@@ -962,7 +947,7 @@ button:active{
   background:
     rgba(15,23,42,0.88);
 
-  backdrop-filter:blur(22px);
+  backdrop-filter:blur(10px);
 
   border:
     1px solid rgba(255,255,255,0.08);
@@ -1185,7 +1170,7 @@ button:active{
       transparent 1px
     );
 
-  background-size:40px 40px;
+  background-size:60px 60px;
 
   animation:moveParticles 40s linear infinite;
 
@@ -1262,7 +1247,7 @@ body::before{
       transparent 1px
     );
 
-  background-size:40px 40px;
+  background-size:60px 60px;
 
   mask-image:
     radial-gradient(
@@ -1447,7 +1432,7 @@ body::after{
 .login-card{
 
   animation:
-    floatCard 6s ease-in-out infinite;
+    floatCard 10s ease-in-out infinite;
 
 }
 
@@ -1465,5 +1450,19 @@ body::after{
   100%{
     transform:translateY(0px);
   }
+
+}
+
+*{
+  -webkit-tap-highlight-color:transparent;
+}
+
+video,
+.face-frame,
+.scan-line{
+
+  will-change:
+    transform,
+    opacity;
 
 }
