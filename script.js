@@ -153,7 +153,13 @@ if(
 // =========================
 // 📷 CAMERA
 // =========================
+
 async function iniciarCamera(){
+
+  const video =
+    document.getElementById(
+      "video"
+    );
 
   try{
 
@@ -257,7 +263,7 @@ async function cadastrarPessoa(){
 
   for(
     let i=0;
-    i<5;
+    i<3;
     i++
   ){
 
@@ -283,7 +289,7 @@ new faceapi
 
   inputSize:256,
 
-  scoreThreshold:0.3
+  scoreThreshold:0.4
 
 })
 
@@ -423,6 +429,7 @@ async function iniciarReconhecimento(){
                   pessoa.face
                 );
 
+                
               
 if(dist < 0.58){
 
@@ -469,27 +476,24 @@ if(dist < 0.58){
 
   }
 
-}else{
+              }
+
+          );
+
+         
+if(!reconhecido){
 
   rostoAtual = null;
 
   framesReconhecidos = 0;
 
+  atualizarStatus(
+    "🔎 Rosto desconhecido"
+  );
+
 }
 
-              }
-
-          );
-
-          if(!reconhecido){
-
-            atualizarStatus(
-              "🔎 Rosto desconhecido"
-            );
-
-          }
-
-          processando = false;
+processando = false;
 
         }
       );
@@ -817,90 +821,6 @@ box.innerHTML = "";
 
 
 // =========================
-// 📋 HISTÓRICO
-// =========================
-function abrirHistorico(
-  pessoaId,
-  nome
-){
-
-  document
-    .getElementById(
-      "modal"
-    )
-    .classList
-    .add("show");
-
-  document
-    .getElementById(
-      "modalNome"
-    )
-    .innerText =
-    `📋 ${nome}`;
-
-  listarRegistrosPessoa(
-    pessoaId,
-
-    registros=>{
-
-      const box =
-        document.getElementById(
-          "modalRegistros"
-        );
-
-      box.innerHTML = "";
-
-      if(
-        registros.length
-        ===
-        0
-      ){
-
-        box.innerHTML =
-          `
-            <p>
-              Nenhum registro
-            </p>
-          `;
-
-        return;
-
-      }
-
-      registros.forEach(
-        registro=>{
-
-          const div =
-            document
-            .createElement("div");
-
-          div.className =
-            "registro-item";
-
-          div.innerHTML = `
-
-            <span>
-              📅 ${registro.data}
-            </span>
-
-            <strong>
-              ${registro.horario}
-            </strong>
-
-          `;
-
-          box.appendChild(div);
-
-        }
-      );
-
-    }
-  );
-
-}
-
-
-// =========================
 // ❌ FECHAR MODAL
 // =========================
 function fecharModal(){
@@ -994,73 +914,13 @@ function trocarModo(modo){
 
 
 // =========================
-// 👀 MONITOR TEMPO REAL
-// =========================
-function carregarMonitor(){
-
-  listarRegistros(
-    registros=>{
-
-      const box =
-        document.getElementById(
-          "monitorRegistros"
-        );
-
-      if(!box) return;
-
-      box.innerHTML = "";
-
-      registros
-      .slice(0,20)
-      .forEach(
-        registro=>{
-
-          const div =
-            document
-            .createElement("div");
-
-          div.className =
-            "item";
-
-          div.innerHTML = `
-
-            <div class="item-info">
-
-              <strong>
-                👤 ${registro.nome}
-              </strong>
-
-              <small>
-                📅 ${registro.data}
-              </small>
-
-            </div>
-
-            <strong>
-              ${registro.horario}
-            </strong>
-
-          `;
-
-          box.appendChild(div);
-
-        }
-      );
-
-    }
-  );
-
-}
-
-
-// =========================
 // 🔄 AUTO UPDATE
 // =========================
 setInterval(()=>{
 
   carregarMonitor();
 
-},2000);
+},500);
 
 
 
