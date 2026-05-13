@@ -409,26 +409,16 @@ new faceapi
 
 
   // =====================
-  // 💾 SALVAR
-  // =====================
-  try{
+// 💾 SALVAR
+// =====================
+await salvarPessoa({
 
-  await salvarBanco(
-    banco
-  );
+  nome,
 
-  console.log(
-    "✅ Pessoa salva"
-  );
+  face:
+    Array.from(media)
 
-}catch(e){
-
-  console.error(
-    "❌ Erro salvarPessoa",
-    e
-  );
-
-}
+});
 
 
   // limpar
@@ -973,90 +963,6 @@ async function deletarRegistro(id){
 }
 
 // =========================
-// 📋 HISTÓRICO
-// =========================
-function abrirHistorico(
-  pessoaId,
-  nome
-){
-
-  document
-    .getElementById(
-      "modal"
-    )
-    .classList
-    .add("show");
-
-  document
-    .getElementById(
-      "modalNome"
-    )
-    .innerText =
-    `📋 ${nome}`;
-
-  listarRegistrosPessoa(
-    pessoaId,
-
-    registros=>{
-
-      const box =
-        document.getElementById(
-          "modalRegistros"
-        );
-
-      box.innerHTML = "";
-
-      if(
-        registros.length
-        ===
-        0
-      ){
-
-        box.innerHTML =
-          `
-            <p>
-              Nenhum registro
-            </p>
-          `;
-
-        return;
-
-      }
-
-      registros.forEach(
-        registro=>{
-
-          const div =
-            document
-            .createElement("div");
-
-          div.className =
-            "registro-item";
-
-          div.innerHTML = `
-
-            <span>
-              📅 ${registro.data}
-            </span>
-
-            <strong>
-              ${registro.horario}
-            </strong>
-
-          `;
-
-          box.appendChild(div);
-
-        }
-      );
-
-    }
-  );
-
-}
-
-
-// =========================
 // ❌ FECHAR MODAL
 // =========================
 function fecharModal(){
@@ -1148,67 +1054,6 @@ function trocarModo(modo){
 
 }
 
-
-// =========================
-// 👀 MONITOR TEMPO REAL
-// =========================
-function carregarMonitor(){
-
-  listarRegistros(
-    registros=>{
-
-      const box =
-        document.getElementById(
-          "monitorRegistros"
-        );
-
-      if(!box) return;
-
-      box.innerHTML = "";
-
-      registros
-      .slice(0,20)
-      .forEach(
-        registro=>{
-
-          const div =
-            document
-            .createElement("div");
-
-          div.className =
-            "item";
-
-          div.innerHTML = `
-
-            <div class="item-info">
-
-              <strong>
-                👤 ${registro.nome}
-              </strong>
-
-              <small>
-                📅 ${registro.data}
-              </small>
-
-            </div>
-
-            <strong>
-              ${registro.horario}
-            </strong>
-
-          `;
-
-          box.appendChild(div);
-
-        }
-      );
-
-    }
-  );
-
-}
-
-
 // =========================
 // 🔄 AUTO UPDATE
 // =========================
@@ -1217,9 +1062,6 @@ setInterval(()=>{
   carregarMonitor();
 
 },5000);
-
-
-
 
 // =========================
 // 📋 HISTÓRICO MELHORADO
