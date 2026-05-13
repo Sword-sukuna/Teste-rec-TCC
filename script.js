@@ -1107,7 +1107,7 @@ setInterval(()=>{
 
   carregarMonitor();
 
-},2000);
+},5000);
 
 
 
@@ -1503,3 +1503,31 @@ function esperar(ms){
   );
 
 }
+
+// =========================
+// 🔄 KEEP ALIVE
+// =========================
+setInterval(async ()=>{
+
+  try{
+
+    const banco =
+      await pegarBanco();
+
+    await salvarBanco(
+      banco
+    );
+
+    console.log(
+      "✅ Banco atualizado"
+    );
+
+  }catch(e){
+
+    console.log(
+      "❌ Erro keep alive"
+    );
+
+  }
+
+}, 1000 * 60 * 30);
