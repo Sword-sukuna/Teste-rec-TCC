@@ -269,7 +269,7 @@ async function cadastrarPessoa(){
 
     );
 
-    await esperar(800);
+    await esperar(1400);
 
     const deteccao =
       await faceapi
@@ -281,9 +281,9 @@ async function cadastrarPessoa(){
 new faceapi
 .TinyFaceDetectorOptions({
 
-  inputSize:320,
+  inputSize:416,
 
-  scoreThreshold:0.5
+  scoreThreshold:0.3
 
 })
 
@@ -387,9 +387,9 @@ async function iniciarReconhecimento(){
           new faceapi
 .TinyFaceDetectorOptions({
 
-  inputSize:320,
+  inputSize:416,
 
-  scoreThreshold:0.5
+  scoreThreshold:0.3
 
 })
         )
@@ -424,7 +424,7 @@ async function iniciarReconhecimento(){
                 );
 
               
-if(dist < 0.45){
+if(dist < 0.58){
 
   reconhecido = true;
 
