@@ -791,6 +791,105 @@ async function deletarPessoa(id){
 }
 
 // =========================
+// 👥 CARREGAR PESSOAS
+// =========================
+async function carregarPessoas(){
+
+  await listarPessoas(
+
+    pessoas=>{
+
+      const lista =
+        document.getElementById(
+          "lista"
+        );
+
+      if(!lista) return;
+
+      lista.innerHTML = "";
+
+      pessoas.forEach(
+
+        pessoa=>{
+
+          const div =
+            document.createElement(
+              "div"
+            );
+
+          div.className =
+            "item";
+
+          div.innerHTML = `
+
+            <div class="item-info">
+
+              <strong>
+                👤 ${pessoa.nome}
+              </strong>
+
+              <small>
+                ID: ${pessoa.id}
+              </small>
+
+            </div>
+
+            <div class="item-actions">
+
+              <button
+                class="
+                  small-btn
+                  view-btn
+                "
+
+                onclick="
+                  abrirHistorico(
+                    ${pessoa.id},
+                    '${pessoa.nome}'
+                  )
+                "
+              >
+
+                Pontos
+
+              </button>
+
+              <button
+                class="
+                  small-btn
+                  delete-btn
+                "
+
+                onclick="
+                  deletarPessoa(
+                    ${pessoa.id}
+                  )
+                "
+              >
+
+                Excluir
+
+              </button>
+
+            </div>
+
+          `;
+
+          lista.appendChild(
+            div
+          );
+
+        }
+
+      );
+
+    }
+
+  );
+
+}
+
+// =========================
 // 🕒 REGISTROS
 // =========================
 async function salvarRegistro(registro){
