@@ -447,7 +447,7 @@ await salvarPessoa({
 // =========================
 async function iniciarReconhecimento(){
 
-  const video =
+    const video =
     document.getElementById(
       "video"
     );
@@ -463,14 +463,16 @@ async function iniciarReconhecimento(){
         await faceapi
         .detectSingleFace(
           video,
+
           new faceapi
-.TinyFaceDetectorOptions({
+          .TinyFaceDetectorOptions({
 
-  inputSize:416,
+            inputSize:160,
 
-  scoreThreshold:0.3
+            scoreThreshold:0.5
 
-})
+          })
+
         )
         .withFaceLandmarks()
         .withFaceDescriptor();
@@ -487,12 +489,14 @@ async function iniciarReconhecimento(){
         deteccao.descriptor;
 
       listarPessoas(
+
         pessoas=>{
 
           let reconhecido =
             false;
 
           pessoas.forEach(
+
             pessoa=>{
 
               const dist =
@@ -502,65 +506,56 @@ async function iniciarReconhecimento(){
                   pessoa.face
                 );
 
-              
-if(dist < 0.58){
+              if(dist < 0.50){
 
-  reconhecido = true;
+                reconhecido = true;
 
+                if(
 
-  // =====================
-  // 🧠 ESTABILIZAÇÃO
-  // =====================
-  if(
+                  rostoAtual
+                  ===
+                  pessoa.id
 
-    rostoAtual
-    ===
-    pessoa.id
+                ){
 
-  ){
+                  framesReconhecidos++;
 
-    framesReconhecidos++;
+                }else{
 
-  }else{
+                  rostoAtual =
+                    pessoa.id;
 
-    rostoAtual =
-      pessoa.id;
+                  framesReconhecidos = 1;
 
-    framesReconhecidos = 1;
+                }
 
-  }
+                if(
 
+                  framesReconhecidos
+                  >=
+                  framesNecessarios
 
-  // confirmou rosto
-  if(
+                ){
 
-    framesReconhecidos
-    >=
-    framesNecessarios
+                  registrarPonto(
+                    pessoa
+                  );
 
-  ){
+                  framesReconhecidos = 0;
 
-    registrarPonto(
-      pessoa
-    );
-
-    framesReconhecidos = 0;
-
-  }
-
-}else{
-
-  rostoAtual = null;
-
-  framesReconhecidos = 0;
-
-}
+                }
 
               }
+
+            }
 
           );
 
           if(!reconhecido){
+
+            rostoAtual = null;
+
+            framesReconhecidos = 0;
 
             atualizarStatus(
               "🔎 Rosto desconhecido"
@@ -571,14 +566,14 @@ if(dist < 0.58){
           processando = false;
 
         }
+
       );
 
     },
 
-    2000
-  );
+    800
 
-}
+  );
 
 
 
