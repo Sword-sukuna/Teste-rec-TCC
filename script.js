@@ -548,7 +548,7 @@ async function iniciarReconhecimento(){
               }
 
             }
-
+          }
           );
 
           if(!reconhecido){
