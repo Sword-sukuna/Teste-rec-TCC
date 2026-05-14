@@ -105,7 +105,7 @@ if(!modoSistema){
 }
 
 // =========================
-// 🧠 FACEPOINT
+// 👁️ EYE GATE
 // =========================
 
 let processando = false;
