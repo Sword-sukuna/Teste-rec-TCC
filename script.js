@@ -1,3 +1,82 @@
+// =========================
+// 🌐 JSONBIN
+// =========================
+const BIN_ID =
+"6a04c52e250b1311c346a586";
+
+const API_KEY =
+"$2a$10$6yb9krhejLLglNJPKaTl9OIaYEYwPiDBQ31OFfzqA.ObKsbf2352y";
+
+const BASE_URL =
+`https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+
+// pegar banco
+async function pegarBanco(){
+
+  const res =
+    await fetch(BASE_URL,{
+
+      headers:{
+        "X-Master-Key":
+        API_KEY
+      }
+
+    });
+
+  const data =
+    await res.json();
+
+  return data.record;
+
+}
+
+// salvar banco
+async function salvarBanco(data){
+
+  await fetch(BASE_URL,{
+
+    method:"PUT",
+
+    headers:{
+
+      "Content-Type":
+      "application/json",
+
+      "X-Master-Key":
+      API_KEY
+
+    },
+
+    body:JSON.stringify(data)
+
+  });
+
+}
+
+// =========================
+// 🚀 INICIAR BANCO
+// =========================
+async function iniciarBanco(){
+
+  let banco =
+    await pegarBanco();
+
+  if(!banco.pessoas){
+
+    banco = {
+
+      pessoas:[],
+
+      registros:[]
+
+    };
+
+    await salvarBanco(banco);
+
+  }
+
+}
 
 // =========================
 // 🧠 RECONHECIMENTO ESTÁVEL
@@ -109,14 +188,14 @@ if(
     await carregarModelos();
 
 
-    // =====================
-    // 📋 DADOS
-    // =====================
-    carregarPessoas();
+    // 📋 DADOS//
+     await iniciarBanco();
 
-    carregarRegistros();
+     await carregarPessoas();
 
-    carregarMonitor();
+     await carregarRegistros();
+
+     await carregarMonitor();
 
 
     // =====================
@@ -330,16 +409,16 @@ new faceapi
 
 
   // =====================
-  // 💾 SALVAR
-  // =====================
-  salvarPessoa({
+// 💾 SALVAR
+// =====================
+await salvarPessoa({
 
-    nome,
+  nome,
 
-    face:
-      Array.from(media)
+  face:
+    Array.from(media)
 
-  });
+});
 
 
   // limpar
@@ -562,7 +641,7 @@ function registrarPonto(pessoa){
 
     pessoa.id,
 
-    registros=>{
+    async registros=>{
 
       let tipo =
         "Entrada";
@@ -591,7 +670,7 @@ function registrarPonto(pessoa){
       // =================
       // 💾 SALVAR
       // =================
-      salvarRegistro({
+      await salvarRegistro({
 
         pessoaId:
           pessoa.id,
@@ -662,29 +741,81 @@ setTimeout(()=>{
 
 
 // =========================
-// 👥 CARREGAR PESSOAS
+// 👥 PESSOAS
 // =========================
-function carregarPessoas(){
+async function listarPessoas(callback){
 
-  listarPessoas(
-    pessoas=>{
+  const banco =
+    await pegarBanco();
 
-      
-const lista =
-  document.getElementById(
-    "lista"
+  callback(
+    banco.pessoas || []
   );
 
-if(!lista) return;
+}
 
-lista.innerHTML = "";
+
+async function salvarPessoa(pessoa){
+
+  const banco =
+    await pegarBanco();
+
+  pessoa.id =
+    Date.now();
+
+  banco.pessoas.push(
+    pessoa
+  );
+
+  await salvarBanco(
+    banco
+  );
+
+}
+
+
+async function deletarPessoa(id){
+
+  const banco =
+    await pegarBanco();
+
+  banco.pessoas =
+    banco.pessoas.filter(
+      p=>p.id !== id
+    );
+
+  await salvarBanco(
+    banco
+  );
+
+}
+
+// =========================
+// 👥 CARREGAR PESSOAS
+// =========================
+async function carregarPessoas(){
+
+  await listarPessoas(
+
+    pessoas=>{
+
+      const lista =
+        document.getElementById(
+          "lista"
+        );
+
+      if(!lista) return;
+
+      lista.innerHTML = "";
 
       pessoas.forEach(
+
         pessoa=>{
 
           const div =
-            document
-            .createElement("div");
+            document.createElement(
+              "div"
+            );
 
           div.className =
             "item";
@@ -703,7 +834,6 @@ lista.innerHTML = "";
 
             </div>
 
-
             <div class="item-actions">
 
               <button
@@ -711,6 +841,7 @@ lista.innerHTML = "";
                   small-btn
                   view-btn
                 "
+
                 onclick="
                   abrirHistorico(
                     ${pessoa.id},
@@ -723,12 +854,12 @@ lista.innerHTML = "";
 
               </button>
 
-
               <button
                 class="
                   small-btn
                   delete-btn
                 "
+
                 onclick="
                   deletarPessoa(
                     ${pessoa.id}
@@ -744,43 +875,119 @@ lista.innerHTML = "";
 
           `;
 
-          lista.appendChild(div);
+          lista.appendChild(
+            div
+          );
 
         }
+
       );
 
     }
+
+  );
+
+}
+
+// =========================
+// 🕒 REGISTROS
+// =========================
+async function salvarRegistro(registro){
+
+  const banco =
+    await pegarBanco();
+
+  registro.id =
+    Date.now();
+
+  banco.registros.unshift(
+    registro
+  );
+
+  await salvarBanco(
+    banco
   );
 
 }
 
 
-// =========================
-// 🕒 CARREGAR REGISTROS
-// =========================
-function carregarRegistros(){
+async function listarRegistros(callback){
 
-  listarRegistros(
-    registros=>{
+  const banco =
+    await pegarBanco();
 
-      
-const box =
-  document.getElementById(
-    "registros"
+  callback(
+    banco.registros || []
   );
 
-if(!box) return;
+}
 
-box.innerHTML = "";
 
-      registros
-      .slice(0,10)
-      .forEach(
+async function listarRegistrosPessoa(
+
+  pessoaId,
+  callback
+
+){
+
+  const banco =
+    await pegarBanco();
+
+  const registros =
+    banco.registros.filter(
+
+      r=>
+      r.pessoaId === pessoaId
+
+    );
+
+  callback(registros);
+
+}
+
+
+async function deletarRegistro(id){
+
+  const banco =
+    await pegarBanco();
+
+  banco.registros =
+    banco.registros.filter(
+      r=>r.id !== id
+    );
+
+  await salvarBanco(
+    banco
+  );
+
+}
+
+// =========================
+// 📋 CARREGAR REGISTROS
+// =========================
+async function carregarRegistros(){
+
+  await listarRegistros(
+
+    registros=>{
+
+      const lista =
+        document.getElementById(
+          "registros"
+        );
+
+      if(!lista) return;
+
+      lista.innerHTML = "";
+
+      registros.forEach(
+
         registro=>{
 
           const div =
-            document
-            .createElement("div");
+            document.createElement(
+              "div"
+            );
 
           div.className =
             "item";
@@ -790,115 +997,42 @@ box.innerHTML = "";
             <div class="item-info">
 
               <strong>
-                ✅ ${registro.nome}
+                👤 ${registro.nome}
               </strong>
 
               <small>
-                ${registro.data}
+                📅 ${registro.data}
               </small>
 
             </div>
 
-            <strong>
-              ${registro.horario}
-            </strong>
+            <div>
+
+              <strong>
+                ${registro.horario}
+              </strong>
+
+              <p>
+                ${registro.tipo}
+              </p>
+
+            </div>
 
           `;
 
-          box.appendChild(div);
+          lista.appendChild(
+            div
+          );
 
         }
+
       );
 
     }
+
   );
 
 }
-
-
-// =========================
-// 📋 HISTÓRICO
-// =========================
-function abrirHistorico(
-  pessoaId,
-  nome
-){
-
-  document
-    .getElementById(
-      "modal"
-    )
-    .classList
-    .add("show");
-
-  document
-    .getElementById(
-      "modalNome"
-    )
-    .innerText =
-    `📋 ${nome}`;
-
-  listarRegistrosPessoa(
-    pessoaId,
-
-    registros=>{
-
-      const box =
-        document.getElementById(
-          "modalRegistros"
-        );
-
-      box.innerHTML = "";
-
-      if(
-        registros.length
-        ===
-        0
-      ){
-
-        box.innerHTML =
-          `
-            <p>
-              Nenhum registro
-            </p>
-          `;
-
-        return;
-
-      }
-
-      registros.forEach(
-        registro=>{
-
-          const div =
-            document
-            .createElement("div");
-
-          div.className =
-            "registro-item";
-
-          div.innerHTML = `
-
-            <span>
-              📅 ${registro.data}
-            </span>
-
-            <strong>
-              ${registro.horario}
-            </strong>
-
-          `;
-
-          box.appendChild(div);
-
-        }
-      );
-
-    }
-  );
-
-}
-
 
 // =========================
 // ❌ FECHAR MODAL
@@ -992,67 +1126,6 @@ function trocarModo(modo){
 
 }
 
-
-// =========================
-// 👀 MONITOR TEMPO REAL
-// =========================
-function carregarMonitor(){
-
-  listarRegistros(
-    registros=>{
-
-      const box =
-        document.getElementById(
-          "monitorRegistros"
-        );
-
-      if(!box) return;
-
-      box.innerHTML = "";
-
-      registros
-      .slice(0,20)
-      .forEach(
-        registro=>{
-
-          const div =
-            document
-            .createElement("div");
-
-          div.className =
-            "item";
-
-          div.innerHTML = `
-
-            <div class="item-info">
-
-              <strong>
-                👤 ${registro.nome}
-              </strong>
-
-              <small>
-                📅 ${registro.data}
-              </small>
-
-            </div>
-
-            <strong>
-              ${registro.horario}
-            </strong>
-
-          `;
-
-          box.appendChild(div);
-
-        }
-      );
-
-    }
-  );
-
-}
-
-
 // =========================
 // 🔄 AUTO UPDATE
 // =========================
@@ -1060,10 +1133,7 @@ setInterval(()=>{
 
   carregarMonitor();
 
-},2000);
-
-
-
+},5000);
 
 // =========================
 // 📋 HISTÓRICO MELHORADO
@@ -1456,3 +1526,31 @@ function esperar(ms){
   );
 
 }
+
+// =========================
+// 🔄 KEEP ALIVE
+// =========================
+setInterval(async ()=>{
+
+  try{
+
+    const banco =
+      await pegarBanco();
+
+    await salvarBanco(
+      banco
+    );
+
+    console.log(
+      "✅ Banco atualizado"
+    );
+
+  }catch(e){
+
+    console.log(
+      "❌ Erro keep alive"
+    );
+
+  }
+
+}, 1000 * 60 * 30);
